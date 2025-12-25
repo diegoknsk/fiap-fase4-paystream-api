@@ -46,36 +46,37 @@ Criar a solução .NET 8 com todas as camadas (Domain, Application, Infra, Infra
 
 ## Critérios de Aceite da História
 
-- [ ] Solução `FastFood.PayStream.sln` criada na raiz do projeto
-- [ ] Todos os projetos Core criados nas pastas corretas:
-  - [ ] `FastFood.PayStream.Domain`
-  - [ ] `FastFood.PayStream.Application`
-  - [ ] `FastFood.PayStream.Infra`
-  - [ ] `FastFood.PayStream.Infra.Persistence`
-  - [ ] `FastFood.PayStream.CrossCutting`
-- [ ] Todos os projetos InterfacesExternas criados:
-  - [ ] `FastFood.PayStream.Api`
-  - [ ] `FastFood.PayStream.Migrator`
-- [ ] Todos os projetos de testes criados:
-  - [ ] `FastFood.PayStream.Tests.Unit`
-  - [ ] `FastFood.PayStream.Tests.Bdd`
-- [ ] Dependências entre projetos configuradas corretamente:
-  - [ ] Application referencia Domain
-  - [ ] Infra referencia Application e Domain
-  - [ ] Infra.Persistence referencia Domain
-  - [ ] CrossCutting referencia Domain e Application
-  - [ ] Api referencia Application, CrossCutting e Infra
-  - [ ] Migrator referencia Infra.Persistence e CrossCutting
-  - [ ] Tests.Unit referencia todos os projetos necessários
-  - [ ] Tests.Bdd referencia todos os projetos necessários
-- [ ] Todos os projetos adicionados à solução (.sln)
-- [ ] Solução compila sem erros (`dotnet build`)
-- [ ] API configurada com Swagger
-- [ ] Rota GET `/api/hello` implementada retornando "Olá Mundo"
-- [ ] API inicia sem erros (`dotnet run` no projeto Api)
-- [ ] Swagger acessível e mostrando a rota `/api/hello`
-- [ ] Teste manual da rota retorna "Olá Mundo" com status 200
-- [ ] Estrutura de pastas segue o padrão definido em `paystream-context.mdc`
-- [ ] Nomenclatura de projetos e namespaces seguem o padrão `FastFood.PayStream.*`
-- [ ] Sem violações críticas de Sonar (se análise já estiver configurada)
+- [x] Solução `FastFood.PayStream.sln` criada na raiz do projeto
+- [x] Todos os projetos Core criados nas pastas corretas:
+  - [x] `FastFood.PayStream.Domain`
+  - [x] `FastFood.PayStream.Application`
+  - [x] `FastFood.PayStream.Infra`
+  - [x] `FastFood.PayStream.Infra.Persistence`
+  - [x] `FastFood.PayStream.CrossCutting`
+- [x] Todos os projetos InterfacesExternas criados:
+  - [x] `FastFood.PayStream.Api`
+  - [x] `FastFood.PayStream.Migrator`
+- [x] Todos os projetos de testes criados:
+  - [x] `FastFood.PayStream.Tests.Unit`
+  - [x] `FastFood.PayStream.Tests.Bdd`
+- [x] Dependências entre projetos configuradas corretamente:
+  - [x] Application referencia Domain
+  - [x] Infra referencia Application e Domain
+  - [x] Infra.Persistence referencia Domain
+  - [x] CrossCutting referencia Domain e Application
+  - [x] Api referencia Application, CrossCutting e Infra
+  - [x] Migrator referencia Infra.Persistence e CrossCutting
+  - [x] Tests.Unit referencia todos os projetos necessários
+  - [x] Tests.Bdd referencia todos os projetos necessários
+- [x] Todos os projetos adicionados à solução (.sln)
+- [x] Solução compila sem erros (`dotnet build`)
+- [x] API configurada com Swagger
+- [x] Rota GET `/api/hello` implementada retornando "Olá Mundo"
+- [x] API inicia sem erros (`dotnet run` no projeto Api)
+- [x] Swagger acessível e mostrando a rota `/api/hello`
+- [x] Teste manual da rota retorna "Olá Mundo" com status 200
+- [x] Estrutura de pastas segue o padrão definido em `paystream-context.mdc`
+- [x] Nomenclatura de projetos e namespaces seguem o padrão `FastFood.PayStream.*`
+- [x] Sem violações críticas de Sonar (se análise já estiver configurada)
+
 
