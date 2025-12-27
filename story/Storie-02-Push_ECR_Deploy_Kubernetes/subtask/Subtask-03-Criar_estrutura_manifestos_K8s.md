@@ -32,3 +32,4 @@ Criar a estrutura de pastas organizada para armazenar os manifestos Kubernetes s
 - Estrutura segue padrão definido em `infrarules.mdc`
 
 
+

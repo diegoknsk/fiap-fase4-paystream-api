@@ -33,3 +33,4 @@ Criar o Dockerfile para a API FastFood.PayStream.Api usando multi-stage build pa
 - Tamanho da imagem final é otimizado (não inclui SDK completo)
 
 
+

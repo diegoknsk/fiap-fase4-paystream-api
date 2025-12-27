@@ -46,3 +46,4 @@ Criar os manifestos de infraestrutura compartilhada (Namespace e ConfigMap) nece
 - Seguem padrões definidos em `infrarules.mdc`
 
 
+

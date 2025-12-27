@@ -33,3 +33,4 @@ Criar o projeto `FastFood.PayStream.Application` na pasta `src/Core/`, que será
 - Arquivo `Class1.cs` removido
 
 
+

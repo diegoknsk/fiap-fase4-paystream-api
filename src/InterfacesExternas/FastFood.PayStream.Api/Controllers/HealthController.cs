@@ -3,15 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace FastFood.PayStream.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class HelloController : ControllerBase
+[Route("[controller]")]
+public class HealthController : ControllerBase
 {
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok("Olá Mundo");
+        return Ok(new { status = "healthy", timestamp = DateTime.UtcNow });
     }
 }
-
 
 

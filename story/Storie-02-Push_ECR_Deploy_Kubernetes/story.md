@@ -93,3 +93,4 @@ Configurar o pipeline completo de CI/CD com GitHub Actions para:
 - [ ] Estrutura segue padrões definidos em `infrarules.mdc` e `paystream-context.mdc`
 
 
+

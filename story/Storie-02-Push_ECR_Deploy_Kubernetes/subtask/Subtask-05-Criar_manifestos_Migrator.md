@@ -38,3 +38,4 @@ Criar o manifesto Kubernetes Job para o Migrator, garantindo que seja idempotent
 - Segue padrões definidos em `infrarules.mdc`
 
 
+

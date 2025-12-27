@@ -26,3 +26,4 @@ Criar o projeto `FastFood.PayStream.CrossCutting` na pasta `src/Core/`, que ser√
 - Arquivo `Class1.cs` removido
 
 
+

@@ -60,3 +60,4 @@ Criar o workflow do GitHub Actions para fazer deploy da API e executar o Job do 
 - Health checks da API funcionam corretamente
 
 
+

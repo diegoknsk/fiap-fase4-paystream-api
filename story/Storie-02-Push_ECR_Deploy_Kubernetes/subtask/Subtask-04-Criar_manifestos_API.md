@@ -51,3 +51,4 @@ Criar os manifestos Kubernetes (Deployment e Service) para a API, configurando r
 - Seguem padrões definidos em `infrarules.mdc`
 
 
+
