@@ -23,8 +23,8 @@ metadata:
 ### 2. ECR (Elastic Container Registry)
 
 **Workflows configurados:**
-- `ECR_REPOSITORY_API: paystream-api`
-- `ECR_REPOSITORY_MIGRATOR: paystream-migrator`
+- `ECR_REPOSITORY_API: fiap-fase4-infra-paystream-api`
+- `ECR_REPOSITORY_MIGRATOR: fiap-fase4-infra-paystream-migrator`
 - `AWS_REGION: us-east-1`
 
 **Registry calculado dinamicamente:**
@@ -33,14 +33,14 @@ ECR_REGISTRY="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 ```
 
 **Imagens criadas:**
-- `${ECR_REGISTRY}/paystream-api:${IMAGE_TAG}`
-- `${ECR_REGISTRY}/paystream-api:latest`
-- `${ECR_REGISTRY}/paystream-migrator:${IMAGE_TAG}`
-- `${ECR_REGISTRY}/paystream-migrator:latest`
+- `${ECR_REGISTRY}/fiap-fase4-infra-paystream-api:${IMAGE_TAG}`
+- `${ECR_REGISTRY}/fiap-fase4-infra-paystream-api:latest`
+- `${ECR_REGISTRY}/fiap-fase4-infra-paystream-migrator:${IMAGE_TAG}`
+- `${ECR_REGISTRY}/fiap-fase4-infra-paystream-migrator:latest`
 
 **Status**: ✅ Correto - Os nomes dos repositórios ECR devem ser criados no Terraform com os mesmos nomes:
-- `paystream-api`
-- `paystream-migrator`
+- `fiap-fase4-infra-paystream-api`
+- `fiap-fase4-infra-paystream-migrator`
 
 ---
 
@@ -114,8 +114,8 @@ ECR_REGISTRY="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 ## 📝 Observações Importantes
 
 1. **ECR Repositories**: Certifique-se de que os repositórios ECR foram criados no Terraform com os nomes exatos:
-   - `paystream-api`
-   - `paystream-migrator`
+   - `fiap-fase4-infra-paystream-api`
+   - `fiap-fase4-infra-paystream-migrator`
 
 2. **Secrets e ConfigMaps**: Devem ser criados no projeto de infra ou manualmente no cluster antes do primeiro deploy:
    - `paystream-config` (ConfigMap)

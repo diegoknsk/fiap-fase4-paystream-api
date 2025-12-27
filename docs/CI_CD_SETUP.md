@@ -61,13 +61,13 @@ As variáveis de ambiente são definidas diretamente nos arquivos de workflow (`
 ```yaml
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY_API: paystream-api
-  ECR_REPOSITORY_MIGRATOR: paystream-migrator
+  ECR_REPOSITORY_API: fiap-fase4-infra-paystream-api
+  ECR_REPOSITORY_MIGRATOR: fiap-fase4-infra-paystream-migrator
 ```
 
 - **AWS_REGION**: Região AWS onde o ECR está configurado (padrão: `us-east-1`)
-- **ECR_REPOSITORY_API**: Nome do repositório ECR para a imagem da API
-- **ECR_REPOSITORY_MIGRATOR**: Nome do repositório ECR para a imagem do Migrator
+- **ECR_REPOSITORY_API**: Nome do repositório ECR para a imagem da API (`fiap-fase4-infra-paystream-api`)
+- **ECR_REPOSITORY_MIGRATOR**: Nome do repositório ECR para a imagem do Migrator (`fiap-fase4-infra-paystream-migrator`)
 
 ### Workflow: deploy-to-eks.yml
 

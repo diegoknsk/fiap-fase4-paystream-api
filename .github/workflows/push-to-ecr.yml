@@ -10,8 +10,8 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY_API: paystream-api
-  ECR_REPOSITORY_MIGRATOR: paystream-migrator
+  ECR_REPOSITORY_API: fiap-fase4-infra-paystream-api
+  ECR_REPOSITORY_MIGRATOR: fiap-fase4-infra-paystream-migrator
 
 jobs:
   build-and-push:
