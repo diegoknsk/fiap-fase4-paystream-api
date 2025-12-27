@@ -43,3 +43,4 @@ Criar documentação completa sobre as secrets do GitHub e variáveis de ambient
 - Seção de troubleshooting com problemas comuns está incluída
 - Documentação está clara e fácil de seguir
 
+

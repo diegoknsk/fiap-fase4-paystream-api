@@ -50,3 +50,4 @@ Criar os manifestos Kubernetes (Deployment e Service) para a API, configurando r
 - Manifestos validam sem erros com `kubectl apply --dry-run`
 - Seguem padrões definidos em `infrarules.mdc`
 
+

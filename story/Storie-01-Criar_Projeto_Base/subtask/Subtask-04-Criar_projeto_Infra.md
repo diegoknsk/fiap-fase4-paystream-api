@@ -25,3 +25,4 @@ Criar o projeto `FastFood.PayStream.Infra` na pasta `src/Core/`, que será a cam
 - Projeto compila sem erros (`dotnet build`)
 - Arquivo `Class1.cs` removido
 
+

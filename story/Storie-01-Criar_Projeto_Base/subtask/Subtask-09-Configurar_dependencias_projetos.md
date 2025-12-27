@@ -33,3 +33,4 @@ Verificar e ajustar todas as dependências entre os projetos criados, garantindo
 - Solução compila sem erros (`dotnet build`)
 - Não há dependências circulares
 
+

@@ -30,3 +30,4 @@ Criar o Dockerfile para o Migrator FastFood.PayStream.Migrator usando multi-stag
 - Imagem pode ser construída sem erros
 - Tamanho da imagem final é otimizado
 
+

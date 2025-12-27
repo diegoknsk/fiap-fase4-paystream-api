@@ -18,3 +18,4 @@ Criar a solução .NET 8 `FastFood.PayStream.sln` na raiz do projeto para organi
 - Solução compila sem erros (`dotnet build`)
 - Solução está vazia (sem projetos ainda)
 
+

@@ -24,3 +24,4 @@ Criar o projeto `FastFood.PayStream.Migrator` na pasta `src/InterfacesExternas/`
 - Projeto compila sem erros (`dotnet build`)
 - Projeto executa sem erros (`dotnet run`)
 
+

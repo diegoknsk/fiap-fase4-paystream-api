@@ -27,3 +27,4 @@ Implementar uma rota GET `/api/hello` na API que retorna "Olá Mundo" para valid
 - Teste manual via navegador ou Swagger funciona corretamente
 - API compila e executa sem erros
 
+

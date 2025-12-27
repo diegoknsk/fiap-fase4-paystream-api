@@ -30,3 +30,4 @@ Criar o projeto `FastFood.PayStream.Api` na pasta `src/InterfacesExternas/`, que
 - API inicia sem erros (`dotnet run`)
 - Swagger UI acessível
 
+

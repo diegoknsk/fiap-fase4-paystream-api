@@ -51,3 +51,4 @@ Criar o workflow do GitHub Actions para fazer build e push das imagens Docker (A
 - Imagens são criadas e publicadas no ECR com sucesso
 - Documentação sobre secrets necessárias está clara
 
+

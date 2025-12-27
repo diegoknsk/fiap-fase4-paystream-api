@@ -45,3 +45,4 @@ Criar os manifestos de infraestrutura compartilhada (Namespace e ConfigMap) nece
 - Manifestos validam sem erros com `kubectl apply --dry-run`
 - Seguem padrões definidos em `infrarules.mdc`
 
+

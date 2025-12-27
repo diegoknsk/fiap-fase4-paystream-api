@@ -14,7 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Core\FastFood.PayStream.Application\FastFood.PayStream.Application.csproj" />
     <ProjectReference Include="..\..\Core\FastFood.PayStream.CrossCutting\FastFood.PayStream.CrossCutting.csproj" />
-    <ProjectReference Include="..\..\Core\FastFood.PayStream.Infra\FastFood.PayStream.Infra.csproj" />
   </ItemGroup>
 
 </Project>

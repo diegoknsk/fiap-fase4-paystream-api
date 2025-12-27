@@ -27,3 +27,4 @@ Criar os projetos de testes unitários e BDD para o PayStream, seguindo a estrut
 - `dotnet test` executa sem erros (mesmo que não haja testes ainda)
 - Estrutura básica de testes criada
 
+

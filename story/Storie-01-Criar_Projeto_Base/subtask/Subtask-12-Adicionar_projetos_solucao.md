@@ -39,3 +39,4 @@ Adicionar todos os projetos criados ao arquivo de solução (.sln) para que poss
 - `dotnet build` compila todos os projetos sem erros
 - Solução pode ser aberta no IDE sem problemas
 
+

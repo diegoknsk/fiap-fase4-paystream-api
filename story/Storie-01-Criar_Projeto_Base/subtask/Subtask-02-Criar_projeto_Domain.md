@@ -24,3 +24,4 @@ Criar o projeto `FastFood.PayStream.Domain` na pasta `src/Core/`, que será a ca
 - Projeto não possui dependências de infraestrutura
 - Arquivo `Class1.cs` removido
 
+

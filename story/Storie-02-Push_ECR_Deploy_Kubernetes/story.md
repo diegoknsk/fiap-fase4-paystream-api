@@ -92,3 +92,4 @@ Configurar o pipeline completo de CI/CD com GitHub Actions para:
 - [ ] Health checks da API funcionam corretamente
 - [ ] Estrutura segue padrões definidos em `infrarules.mdc` e `paystream-context.mdc`
 
+

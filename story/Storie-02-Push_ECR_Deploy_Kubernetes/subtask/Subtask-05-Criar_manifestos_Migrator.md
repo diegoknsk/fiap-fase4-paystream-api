@@ -37,3 +37,4 @@ Criar o manifesto Kubernetes Job para o Migrator, garantindo que seja idempotent
 - Manifesto valida sem erros com `kubectl apply --dry-run`
 - Segue padrões definidos em `infrarules.mdc`
 
+

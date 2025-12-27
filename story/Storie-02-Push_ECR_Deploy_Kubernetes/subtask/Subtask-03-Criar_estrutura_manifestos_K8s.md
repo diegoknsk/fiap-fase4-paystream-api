@@ -31,3 +31,4 @@ Criar a estrutura de pastas organizada para armazenar os manifestos Kubernetes s
   - `k8s/infra/` - Manifestos de infraestrutura
 - Estrutura segue padrão definido em `infrarules.mdc`
 
+

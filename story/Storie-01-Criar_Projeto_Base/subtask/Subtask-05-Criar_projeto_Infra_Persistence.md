@@ -34,3 +34,4 @@ Criar o projeto `FastFood.PayStream.Infra.Persistence` na pasta `src/Core/`, que
 - Projeto compila sem erros (`dotnet build`)
 - Arquivo `Class1.cs` removido
 
+
