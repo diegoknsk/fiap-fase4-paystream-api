@@ -59,12 +59,11 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.ecr-registry.outputs.registry }}
         IMAGE_TAG: ${{ steps.image-tag.outputs.tag }}
-        ECR_REPOSITORY_API: fiap-fase4-infra-paystream-api
-        ECR_REPOSITORY_MIGRATOR: fiap-fase4-infra-paystream-migrator
+        ECR_REPOSITORY: fiap-fase4-infra-paystream-api
       run: |
         echo "Validating images exist in ECR..."
-        aws ecr describe-images --repository-name ${ECR_REPOSITORY_API} --image-ids imageTag=${IMAGE_TAG} --region ${AWS_REGION} || exit 1
-        aws ecr describe-images --repository-name ${ECR_REPOSITORY_MIGRATOR} --image-ids imageTag=${IMAGE_TAG} --region ${AWS_REGION} || exit 1
+        aws ecr describe-images --repository-name ${ECR_REPOSITORY} --image-ids imageTag=api-${IMAGE_TAG} --region ${AWS_REGION} || exit 1
+        aws ecr describe-images --repository-name ${ECR_REPOSITORY} --image-ids imageTag=migrator-${IMAGE_TAG} --region ${AWS_REGION} || exit 1
         echo "Images validated successfully!"
 
     - name: Install kubectl
@@ -83,10 +82,10 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.ecr-registry.outputs.registry }}
         IMAGE_TAG: ${{ steps.image-tag.outputs.tag }}
-        ECR_REPOSITORY_API: fiap-fase4-infra-paystream-api
+        ECR_REPOSITORY: fiap-fase4-infra-paystream-api
       run: |
         echo "Updating deployment image..."
-        FULL_IMAGE="${ECR_REGISTRY}/${ECR_REPOSITORY_API}:${IMAGE_TAG}"
+        FULL_IMAGE="${ECR_REGISTRY}/${ECR_REPOSITORY}:api-${IMAGE_TAG}"
         echo "Setting image to: ${FULL_IMAGE}"
         kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${FULL_IMAGE} -n ${KUBERNETES_NAMESPACE}
         echo "Deployment image updated successfully!"
@@ -109,12 +108,12 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.ecr-registry.outputs.registry }}
         IMAGE_TAG: ${{ steps.image-tag.outputs.tag }}
-        ECR_REPOSITORY_MIGRATOR: fiap-fase4-infra-paystream-migrator
+        ECR_REPOSITORY: fiap-fase4-infra-paystream-api
       run: |
         echo "Creating Migrator Job..."
         # Jobs não podem ser atualizados, então criamos um novo com timestamp único
         JOB_NAME="paystream-migrator-$(date +%s)"
-        FULL_IMAGE="${ECR_REGISTRY}/${ECR_REPOSITORY_MIGRATOR}:${IMAGE_TAG}"
+        FULL_IMAGE="${ECR_REGISTRY}/${ECR_REPOSITORY}:migrator-${IMAGE_TAG}"
         echo "Job name: ${JOB_NAME}"
         echo "Image: ${FULL_IMAGE}"
         

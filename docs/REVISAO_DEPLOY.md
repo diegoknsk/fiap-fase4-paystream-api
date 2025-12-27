@@ -23,8 +23,7 @@ metadata:
 ### 2. ECR (Elastic Container Registry)
 
 **Workflows configurados:**
-- `ECR_REPOSITORY_API: fiap-fase4-infra-paystream-api`
-- `ECR_REPOSITORY_MIGRATOR: fiap-fase4-infra-paystream-migrator`
+- `ECR_REPOSITORY: fiap-fase4-infra-paystream-api` (repositório único)
 - `AWS_REGION: us-east-1`
 
 **Registry calculado dinamicamente:**
@@ -32,15 +31,15 @@ metadata:
 ECR_REGISTRY="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 ```
 
-**Imagens criadas:**
-- `${ECR_REGISTRY}/fiap-fase4-infra-paystream-api:${IMAGE_TAG}`
-- `${ECR_REGISTRY}/fiap-fase4-infra-paystream-api:latest`
-- `${ECR_REGISTRY}/fiap-fase4-infra-paystream-migrator:${IMAGE_TAG}`
-- `${ECR_REGISTRY}/fiap-fase4-infra-paystream-migrator:latest`
+**Imagens criadas no mesmo repositório:**
+- API: `${ECR_REGISTRY}/fiap-fase4-infra-paystream-api:api-${IMAGE_TAG}`
+- API: `${ECR_REGISTRY}/fiap-fase4-infra-paystream-api:api-latest`
+- Migrator: `${ECR_REGISTRY}/fiap-fase4-infra-paystream-api:migrator-${IMAGE_TAG}`
+- Migrator: `${ECR_REGISTRY}/fiap-fase4-infra-paystream-api:migrator-latest`
 
-**Status**: ✅ Correto - Os nomes dos repositórios ECR devem ser criados no Terraform com os mesmos nomes:
-- `fiap-fase4-infra-paystream-api`
-- `fiap-fase4-infra-paystream-migrator`
+**Status**: ✅ Correto - Usa um único repositório ECR com tags diferentes para diferenciar as imagens:
+- Repositório: `fiap-fase4-infra-paystream-api`
+- Tags: `api-*` para API e `migrator-*` para Migrator
 
 ---
 
@@ -113,9 +112,12 @@ ECR_REGISTRY="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 
 ## 📝 Observações Importantes
 
-1. **ECR Repositories**: Certifique-se de que os repositórios ECR foram criados no Terraform com os nomes exatos:
+1. **ECR Repository**: Certifique-se de que o repositório ECR foi criado no Terraform com o nome exato:
    - `fiap-fase4-infra-paystream-api`
-   - `fiap-fase4-infra-paystream-migrator`
+   
+   **Nota**: Ambas as imagens (API e Migrator) são armazenadas no mesmo repositório, diferenciadas por tags:
+   - API: tags `api-*` (ex: `api-latest`, `api-abc123`)
+   - Migrator: tags `migrator-*` (ex: `migrator-latest`, `migrator-abc123`)
 
 2. **Secrets e ConfigMaps**: Devem ser criados no projeto de infra ou manualmente no cluster antes do primeiro deploy:
    - `paystream-config` (ConfigMap)

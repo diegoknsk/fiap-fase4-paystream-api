@@ -10,8 +10,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY_API: fiap-fase4-infra-paystream-api
-  ECR_REPOSITORY_MIGRATOR: fiap-fase4-infra-paystream-migrator
+  ECR_REPOSITORY: fiap-fase4-infra-paystream-api
 
 jobs:
   build-and-push:
@@ -57,24 +56,24 @@ jobs:
         ECR_REGISTRY: ${{ steps.ecr-registry.outputs.registry }}
         IMAGE_TAG: ${{ steps.image-tag.outputs.tag }}
       run: |
-        docker build -t ${ECR_REGISTRY}/${ECR_REPOSITORY_API}:${IMAGE_TAG} \
-          -t ${ECR_REGISTRY}/${ECR_REPOSITORY_API}:latest \
+        docker build -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:api-${IMAGE_TAG} \
+          -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:api-latest \
           -f src/InterfacesExternas/FastFood.PayStream.Api/Dockerfile .
-        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY_API}:${IMAGE_TAG}
-        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY_API}:latest
-        echo "API image pushed: ${ECR_REGISTRY}/${ECR_REPOSITORY_API}:${IMAGE_TAG}"
+        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:api-${IMAGE_TAG}
+        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:api-latest
+        echo "API image pushed: ${ECR_REGISTRY}/${ECR_REPOSITORY}:api-${IMAGE_TAG}"
 
     - name: Build and push Migrator image
       env:
         ECR_REGISTRY: ${{ steps.ecr-registry.outputs.registry }}
         IMAGE_TAG: ${{ steps.image-tag.outputs.tag }}
       run: |
-        docker build -t ${ECR_REGISTRY}/${ECR_REPOSITORY_MIGRATOR}:${IMAGE_TAG} \
-          -t ${ECR_REGISTRY}/${ECR_REPOSITORY_MIGRATOR}:latest \
+        docker build -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:migrator-${IMAGE_TAG} \
+          -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:migrator-latest \
           -f src/InterfacesExternas/FastFood.PayStream.Migrator/Dockerfile .
-        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY_MIGRATOR}:${IMAGE_TAG}
-        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY_MIGRATOR}:latest
-        echo "Migrator image pushed: ${ECR_REGISTRY}/${ECR_REPOSITORY_MIGRATOR}:${IMAGE_TAG}"
+        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:migrator-${IMAGE_TAG}
+        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:migrator-latest
+        echo "Migrator image pushed: ${ECR_REGISTRY}/${ECR_REPOSITORY}:migrator-${IMAGE_TAG}"
 
     - name: Validate images in ECR
       env:
@@ -82,8 +81,8 @@ jobs:
         IMAGE_TAG: ${{ steps.image-tag.outputs.tag }}
       run: |
         echo "Validating images in ECR..."
-        aws ecr describe-images --repository-name ${ECR_REPOSITORY_API} --image-ids imageTag=${IMAGE_TAG} --region ${AWS_REGION}
-        aws ecr describe-images --repository-name ${ECR_REPOSITORY_MIGRATOR} --image-ids imageTag=${IMAGE_TAG} --region ${AWS_REGION}
+        aws ecr describe-images --repository-name ${ECR_REPOSITORY} --image-ids imageTag=api-${IMAGE_TAG} --region ${AWS_REGION}
+        aws ecr describe-images --repository-name ${ECR_REPOSITORY} --image-ids imageTag=migrator-${IMAGE_TAG} --region ${AWS_REGION}
         echo "Images validated successfully!"
 
 
