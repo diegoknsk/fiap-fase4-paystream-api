@@ -98,7 +98,7 @@ jobs:
       run: |
         echo "Verifying API deployment..."
         kubectl get deployment ${DEPLOYMENT_NAME} -n ${KUBERNETES_NAMESPACE}
-        kubectl get pods -l app=${DEPLOYMENT_NAME} -n ${KUBERNETES_NAMESPACE}
+        kubectl get pods -l app=paystream-api -n ${KUBERNETES_NAMESPACE}
         echo "API deployment verified!"
 
     - name: Create and execute Migrator Job
@@ -108,14 +108,14 @@ jobs:
         IMAGE_TAG: ${{ steps.image-tag.outputs.tag }}
       run: |
         echo "Creating Migrator Job..."
+        # Jobs não podem ser atualizados, então criamos um novo com timestamp único
         JOB_NAME="paystream-migrator-$(date +%s)"
         FULL_IMAGE="${ECR_REGISTRY}/paystream-migrator:${IMAGE_TAG}"
         echo "Job name: ${JOB_NAME}"
         echo "Image: ${FULL_IMAGE}"
         
-        # Criar job a partir do template (se existir no projeto de infra) ou criar inline
-        # Nota: O job deve estar definido no projeto de infra (C:\Projetos\Fiap\fiap-fase4-infra)
-        # Aqui criamos o job inline com a imagem atualizada
+        # Criar job baseado no template do projeto de infra, mas com nome único e imagem atualizada
+        # O template está em: C:\Projetos\Fiap\fiap-fase4-infra\k8s\app\paystream\migrator-job.yaml
         cat <<EOF | kubectl apply -f -
         apiVersion: batch/v1
         kind: Job
@@ -124,30 +124,30 @@ jobs:
           namespace: ${KUBERNETES_NAMESPACE}
           labels:
             app: paystream-migrator
-            component: migrator
+            service: paystream
         spec:
           completions: 1
           parallelism: 1
           backoffLimit: 3
-          ttlSecondsAfterFinished: 3600
           template:
             metadata:
               labels:
                 app: paystream-migrator
-                component: migrator
+                service: paystream
             spec:
-              restartPolicy: OnFailure
+              restartPolicy: Never
               containers:
               - name: migrator
                 image: ${FULL_IMAGE}
                 imagePullPolicy: Always
                 resources:
                   requests:
-                    cpu: 100m
-                    memory: 256Mi
+                    cpu: "100m"
+                    memory: "256Mi"
                   limits:
-                    cpu: 500m
-                    memory: 512Mi
+                    cpu: "500m"
+                    memory: "512Mi"
+                terminationGracePeriodSeconds: 30
                 envFrom:
                 - configMapRef:
                     name: paystream-config
