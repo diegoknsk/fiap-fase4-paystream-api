@@ -1,0 +1,410 @@
+---
+alwaysApply: true
+---
+
+Você está trabalhando no microserviço **FastFoodPayStream**, parte do ecossistema FastFood para trabalho acadêmico (Fase 4).
+
+=====================
+CONTEXTO DO PROJETO
+=====================
+
+Este é um microserviço de **Saga Coreografada** que faz parte de uma solução maior de fast food com múltiplos microserviços.
+
+**Tecnologias e Versões:**
+- .NET 8 (todas as APIs)
+- AWS Academy (ambiente de desenvolvimento)
+- PostgreSQL (banco de dados exclusivo deste serviço - RDS)
+- AWS SQS (integração assíncrona com outros microserviços)
+- Mercado Pago (integração externa para processamento de pagamentos)
+
+**Autenticação AWS:**
+- **SEMPRE usar Access Key e Secret Key** para todos os acessos AWS
+- Não usar credenciais IAM roles ou outros métodos
+- Configurar credenciais via variáveis de ambiente ou AWS CLI
+
+=====================
+RESPONSABILIDADES DO PAYSTREAM
+=====================
+
+Este microserviço é responsável por gerenciar todo o ciclo de vida de pagamentos:
+
+**Funcionalidades Principais:**
+1. **Criação de Pagamento:**
+   - Receber solicitação de pagamento via SQS (do OrderHub)
+   - Criar intent de pagamento
+   - Persistir informações do pagamento no PostgreSQL
+   - Gerar ID único para o pagamento
+
+2. **Processamento de Pagamento:**
+   - Integração com Mercado Pago (serviço externo)
+   - Suporte a modo mockado para desenvolvimento/testes
+   - Suporte a modo integrado com API real do Mercado Pago
+   - Processar pagamento e obter resultado
+
+3. **Consulta de Status:**
+   - Consultar status de pagamento por ID
+   - Listar pagamentos (com filtros e paginação)
+   - Retornar histórico de transações
+
+4. **Integração com Saga:**
+   - Consome mensagens da fila SQS do OrderHub (pedidos criados)
+   - Processa o pagamento do pedido
+   - Publica resultado do pagamento na fila SQS para o KitchenFlow (Cozinha)
+   - Continua o fluxo da saga coreografada
+
+=====================
+BANCO DE DADOS - POSTGRESQL
+=====================
+
+**Banco Exclusivo:**
+- Este microserviço possui um banco PostgreSQL (RDS) exclusivo
+- Não compartilha dados diretamente com outros microserviços
+- Comunicação entre serviços é feita via mensagens assíncronas (SQS)
+
+**Tabelas Principais:**
+1. **Pagamentos (Payments)**
+   - Armazena informações dos pagamentos criados
+   - Campos: ID, OrderId, Amount, Status, PaymentMethod, CreatedAt, UpdatedAt, etc.
+   - Estrutura a ser definida conforme necessidades do domínio
+
+2. **Transações (Transactions)**
+   - Armazena histórico de transações com Mercado Pago
+   - Campos: ID, PaymentId, ExternalTransactionId, Status, ResponseData, CreatedAt, etc.
+   - Estrutura a ser definida conforme necessidades do domínio
+
+**Observação:**
+- Pode ser necessário criar tabelas adicionais conforme o projeto evolui
+- Sempre avaliar a necessidade antes de criar novas tabelas
+- Seguir padrões de modelagem relacional (normalização, índices, etc.)
+- Usar Entity Framework Core para acesso ao banco
+
+=====================
+ARQUITETURA E PADRÕES
+=====================
+
+**Saga Coreografada:**
+- Este serviço participa de uma saga coreografada
+- Cada microserviço é responsável por seu próprio passo
+- Comunicação via eventos/mensagens (SQS)
+- Não há orquestrador central
+
+**Fluxo de Integração:**
+```
+OrderHub (cria pedido) 
+  → SQS (envia mensagem para PayStream)
+  → PayStream (consome mensagem, cria pagamento)
+  → PayStream (processa pagamento com Mercado Pago)
+  → PayStream (persiste resultado)
+  → SQS (envia resultado para KitchenFlow)
+  → KitchenFlow (processa pedido)
+  → [continua saga...]
+```
+
+**Padrão de Código:**
+- Seguir arquitetura Clean Architecture conforme definido em `baseprojectcontext.mdc`
+- Usar padrão Gateway para abstrair acesso ao PostgreSQL e Mercado Pago
+- UseCases orquestram o fluxo de negócio
+- API expõe endpoints HTTP RESTful
+
+=====================
+ESTRUTURA DE PASTAS E ARQUITETURA
+=====================
+
+**Referência de Arquitetura:**
+- Este projeto deve seguir a mesma estrutura de pastas e organização do projeto de referência: `C:\Projetos\Fiap\fiap-fase4-auth-lambda`
+- A estrutura foi validada e aplicada com sucesso no projeto Auth Lambda
+- Adaptar conforme necessário para o contexto de API HTTP em EKS
+
+**Estrutura de Diretórios:**
+
+```
+fiap-fase4-paystream-api/
+├── src/
+│   ├── Core/
+│   │   ├── FastFood.PayStream.Domain/
+│   │   │   ├── Entities/          # Entidades de domínio (Payment, Transaction, etc.)
+│   │   │   ├── Common/             # Exceções, Value Objects, etc.
+│   │   │   └── FastFood.PayStream.Domain.csproj
+│   │   │
+│   │   ├── FastFood.PayStream.Application/
+│   │   │   ├── Commands/           # Commands para operações (CreatePayment, ProcessPayment, etc.)
+│   │   │   ├── UseCases/           # Casos de uso (CreatePaymentUseCase, ProcessPaymentUseCase, etc.)
+│   │   │   ├── InputModels/        # Modelos de entrada dos UseCases
+│   │   │   ├── OutputModels/       # Modelos de saída dos UseCases
+│   │   │   ├── Responses/          # ResponseModels (Application Responses)
+│   │   │   ├── Presenters/         # Presenters para transformação de Responses
+│   │   │   ├── Ports/              # Interfaces de Gateways (IPaymentGateway, IMercadoPagoGateway, ISqsGateway)
+│   │   │   └── FastFood.PayStream.Application.csproj
+│   │   │
+│   │   └── FastFood.PayStream.CrossCutting/
+│   │       ├── Extensions/         # Extensões (ServiceCollectionExtensions, etc.)
+│   │       └── FastFood.PayStream.CrossCutting.csproj
+│   │
+│   ├── Infra/
+│   │   ├── FastFood.PayStream.Infra/
+│   │   │   ├── Services/          # Implementações de serviços externos (SQS, Mercado Pago, etc.)
+│   │   │   └── FastFood.PayStream.Infra.csproj
+│   │   │
+│   │   └── FastFood.PayStream.Infra.Persistence/
+│   │       ├── Repositories/      # Implementações de repositórios PostgreSQL (EF Core)
+│   │       ├── Entities/          # Entidades de persistência (se necessário)
+│   │       ├── Configurations/    # Configurações EF Core (Fluent API)
+│   │       ├── Migrations/        # Migrações do Entity Framework
+│   │       ├── PayStreamDbContext.cs
+│   │       └── FastFood.PayStream.Infra.Persistence.csproj
+│   │
+│   ├── InterfacesExternas/
+│   │   ├── FastFood.PayStream.Api/  # API HTTP ASP.NET Core (para EKS)
+│   │   │   ├── Controllers/        # Controllers HTTP
+│   │   │   ├── Program.cs
+│   │   │   ├── appsettings.json
+│   │   │   └── FastFood.PayStream.Api.csproj
+│   │   │
+│   │   └── FastFood.PayStream.Migrator/  # Job de manutenção PostgreSQL (K8s Job)
+│   │       ├── Program.cs
+│   │       └── FastFood.PayStream.Migrator.csproj
+│   │
+│   └── tests/
+│       ├── FastFood.PayStream.Tests.Unit/  # Testes unitários
+│       └── FastFood.PayStream.Tests.Bdd/   # Testes BDD (SpecFlow)
+│
+├── rules/                            # Regras e contexto do projeto
+├── docs/                             # Documentação
+├── .github/
+│   └── workflows/                    # GitHub Actions
+└── FastFood.PayStream.sln            # Solução .NET
+```
+
+**Organização da Solução (.sln):**
+- Projetos Core dentro de `src/Core` (Domain, Application, CrossCutting)
+- Projetos de Infra dentro de `src/Infra` (Infra, Infra.Persistence)
+- Projetos de API/Migrator dentro de `src/InterfacesExternas`
+- Projetos de testes dentro de `src/tests`
+- **SEMPRE adicionar novos projetos ao arquivo de solução após criá-los**
+
+**Nomenclatura de Projetos:**
+- Padrão: `FastFood.PayStream.{Camada}`
+- Exemplos:
+  - `FastFood.PayStream.Domain`
+  - `FastFood.PayStream.Application`
+  - `FastFood.PayStream.Infra`
+  - `FastFood.PayStream.Infra.Persistence`
+  - `FastFood.PayStream.CrossCutting`
+  - `FastFood.PayStream.Api`
+  - `FastFood.PayStream.Migrator`
+  - `FastFood.PayStream.Tests.Unit`
+  - `FastFood.PayStream.Tests.Bdd`
+
+**Namespaces:**
+- Seguir o mesmo padrão dos nomes dos projetos
+- Exemplo: `FastFood.PayStream.Domain.Entities`, `FastFood.PayStream.Application.UseCases`, etc.
+
+**Diferenças em relação ao projeto Auth Lambda:**
+- API será ASP.NET Core HTTP (não Lambda)
+- Banco de dados será PostgreSQL (RDS)
+- Terá projeto Migrator para manutenção de tabelas PostgreSQL (K8s Job)
+- Não terá múltiplas Lambdas, apenas uma API HTTP
+
+=====================
+REGRAS ESPECÍFICAS DO PAYSTREAM
+=====================
+
+**Criação de Pagamento:**
+- Receber mensagem da fila SQS do OrderHub
+- Validar dados do pedido recebido
+- Criar intent de pagamento
+- Gerar ID único para o pagamento
+- Persistir no PostgreSQL
+- Retornar informações do pagamento criado
+
+**Processamento de Pagamento:**
+- Suportar dois modos de operação:
+  1. **Modo Mockado:** Retornar resultado simulado para desenvolvimento/testes
+  2. **Modo Integrado:** Integração real com API do Mercado Pago
+- Configuração via variáveis de ambiente ou appsettings
+- Processar pagamento com Mercado Pago (quando em modo integrado)
+- Persistir resultado da transação
+- Atualizar status do pagamento
+
+**Integração com Mercado Pago:**
+- Criar Gateway abstrato (`IMercadoPagoGateway`) para desacoplar implementação
+- Implementar duas versões:
+  - `MercadoPagoMockGateway`: Retorna resultados mockados
+  - `MercadoPagoGateway`: Integração real com API do Mercado Pago
+- Usar injeção de dependência para alternar entre implementações
+- Tratar erros de comunicação com Mercado Pago
+- Implementar retry logic quando necessário
+
+**Consulta de Status:**
+- Consultar pagamento por ID
+- Listar pagamentos com filtros (status, data, etc.)
+- Retornar histórico de transações
+- Implementar paginação quando necessário
+
+**Publicação de Resultado:**
+- Após processamento bem-sucedido do pagamento
+- Enviar mensagem para fila SQS do KitchenFlow
+- Mensagem deve conter:
+  - ID do pedido
+  - ID do pagamento
+  - Status do pagamento (aprovado/rejeitado)
+  - Valor pago
+  - Dados relevantes para a cozinha
+- Tratar erros de envio (retry, dead letter queue)
+
+**Consumo de Mensagens SQS:**
+- Implementar consumer de mensagens da fila do OrderHub
+- Processar mensagens de forma assíncrona
+- Implementar tratamento de erros e retry
+- Considerar dead letter queue para mensagens com falha
+
+=====================
+CONFIGURAÇÃO AWS
+=====================
+
+**Credenciais:**
+- Configurar Access Key e Secret Key via:
+  - Variáveis de ambiente: `AWS_ACCESS_KEY_ID` e `AWS_SECRET_ACCESS_KEY`
+  - Ou arquivo de credenciais AWS (`~/.aws/credentials`)
+  - Ou configuração no appsettings.json (apenas para desenvolvimento local)
+
+**Recursos AWS Utilizados:**
+- PostgreSQL (RDS): Banco de dados para pagamentos e transações
+- SQS: 
+  - Fila para consumo de mensagens do OrderHub (pedidos criados)
+  - Fila para envio de mensagens ao KitchenFlow (resultado do pagamento)
+- EKS: Cluster Kubernetes para hospedar o deployment da API
+- ECR: Container Registry para armazenar imagens Docker
+- (Futuro) API Gateway: Para exposição da API (se necessário)
+
+**Região:**
+- Usar a região configurada no AWS Academy
+- Verificar configuração de região nas credenciais
+
+**Configuração Mercado Pago:**
+- Configurar credenciais do Mercado Pago via variáveis de ambiente
+- Exemplo: `MERCADO_PAGO_ACCESS_TOKEN`, `MERCADO_PAGO_PUBLIC_KEY`
+- Configurar modo de operação: `MERCADO_PAGO_MODE` (MOCK ou INTEGRATED)
+
+=====================
+DEPLOY E INFRAESTRUTURA
+=====================
+
+**Ambiente de Execução:**
+- A API será executada em um **Deployment no cluster EKS**
+- A infraestrutura (EKS, ECR, RDS PostgreSQL, SQS, etc.) será criada em **outro projeto separado**
+- Este repositório contém apenas o código da aplicação e pipelines de CI/CD
+
+**GitHub Actions - CI/CD:**
+
+Este repositório terá **3 GitHub Actions principais**:
+
+1. **Push de Imagens para ECR:**
+   - Build da imagem Docker da aplicação
+   - Push da imagem para o Amazon ECR
+   - Executar após build, testes e análise Sonar bem-sucedidos
+   - Tag da imagem baseada em versão/tag do Git
+   - **Validação obrigatória:** Cobertura mínima de 85% e pelo menos 1 teste BDD
+
+2. **Deploy no EKS:**
+   - Deploy do deployment no cluster Kubernetes
+   - Atualizar a imagem do deployment com a nova versão
+   - Executar após push bem-sucedido para ECR
+   - Pode incluir health checks e rollback automático
+
+3. **Job de Manutenção de Banco de Dados (PostgreSQL):**
+   - Executar um **Kubernetes Job** para manutenção do PostgreSQL
+   - Responsável por:
+     - Executar migrações do Entity Framework Core
+     - Criar novas tabelas quando necessário
+     - Ajustes finos em tabelas existentes (índices, constraints, etc.)
+     - Manutenção de schema quando aplicável
+   - Executar manualmente ou em eventos específicos (ex: criação de PR, merge na main)
+   - O job deve ser idempotente (pode ser executado múltiplas vezes sem problemas)
+   - Usar Entity Framework Core Migrations para gerenciar schema
+
+**Observações sobre Deploy:**
+- As configurações do Kubernetes (Deployment, Service, ConfigMap, etc.) podem estar neste repositório ou no projeto de infraestrutura
+- Sempre validar que a imagem foi criada corretamente antes do deploy
+- O job de manutenção deve ter permissões adequadas para acessar o RDS PostgreSQL (via Access Key/Secret Key)
+- Configurar connection string do PostgreSQL via ConfigMap ou Secrets do Kubernetes
+
+=====================
+MELHORES PRÁTICAS APLICADAS
+=====================
+
+- Clean Architecture com separação clara de responsabilidades
+- SOLID principles
+- Testes unitários e de integração
+- Tratamento de erros robusto
+- Logging estruturado
+- Validações de entrada
+- Idempotência nas operações críticas
+- Versionamento de API (quando necessário)
+- Abstração de serviços externos (Mercado Pago) via Gateways
+- Suporte a modo mockado e integrado para facilitar desenvolvimento e testes
+
+=====================
+CRITÉRIOS DE ACEITE - TESTES
+=====================
+
+**Cobertura de Testes (SonarQube/SonarCloud):**
+- **Mínimo obrigatório: 85% de cobertura de código**
+- A análise de cobertura deve ser executada via SonarQube/SonarCloud
+- O Quality Gate do Sonar deve bloquear merges que não atendam este critério
+- Cobertura deve ser medida em todas as camadas (Domain, UseCases, Gateways, API)
+
+**Teste BDD (Behavior Driven Development):**
+- **Mínimo obrigatório: 1 teste BDD** (mesmo que simples)
+- Deve validar pelo menos um fluxo crítico do sistema
+- Exemplo sugerido: "OrderHub envia pedido → PayStream recebe mensagem → cria pagamento → processa com Mercado Pago → publica resultado para KitchenFlow"
+- Pode usar frameworks como SpecFlow, Gherkin, ou similar
+- O teste BDD deve ser executável e fazer parte da suíte de testes do projeto
+
+**Validação no CI/CD:**
+- Os critérios de aceite devem ser validados nas GitHub Actions
+- Build deve falhar se cobertura estiver abaixo de 85%
+- Build deve falhar se não houver pelo menos 1 teste BDD implementado
+- Sonar Quality Gate deve ser obrigatório para merge na branch principal
+
+**Observações:**
+- Estes são critérios de aceite obrigatórios do projeto
+- Não é permitido fazer merge sem atender ambos os critérios
+- Testes BDD podem ser simples, mas devem validar comportamento real do sistema
+- Cobertura de 85% é o mínimo, mas buscar sempre o máximo possível
+
+=====================
+INTEGRAÇÃO COM MERCADO PAGO
+=====================
+
+**Modo Mockado:**
+- Implementar `MercadoPagoMockGateway` que retorna resultados simulados
+- Útil para desenvolvimento, testes e ambientes sem credenciais reais
+- Deve simular diferentes cenários: pagamento aprovado, rejeitado, pendente, etc.
+- Configurar via variável de ambiente: `MERCADO_PAGO_MODE=MOCK`
+
+**Modo Integrado:**
+- Implementar `MercadoPagoGateway` com integração real com API do Mercado Pago
+- Usar SDK oficial do Mercado Pago ou chamadas HTTP diretas
+- Tratar autenticação com tokens de acesso
+- Implementar tratamento de erros e retry logic
+- Configurar via variável de ambiente: `MERCADO_PAGO_MODE=INTEGRATED`
+
+**Configuração:**
+- Credenciais devem ser configuradas via variáveis de ambiente ou Secrets do Kubernetes
+- Nunca commitar credenciais no código ou repositório
+- Usar diferentes credenciais para ambiente de desenvolvimento e produção
+
+=====================
+NOTAS IMPORTANTES
+=====================
+
+- Este é um projeto acadêmico, mas deve seguir padrões profissionais
+- Código deve ser limpo, testável e manutenível
+- Documentação inline quando necessário
+- Commits descritivos e organizados
+- Sempre considerar escalabilidade e performance do PostgreSQL
+- Monitorar custos do AWS Academy (recursos limitados)
+- Implementar health checks para monitoramento da API
+- Considerar implementar circuit breaker para integração com Mercado Pago
+- Logs devem ser estruturados para facilitar debugging em produção
