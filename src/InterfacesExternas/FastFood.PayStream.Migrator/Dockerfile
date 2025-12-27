@@ -21,6 +21,16 @@ RUN dotnet publish src/InterfacesExternas/FastFood.PayStream.Migrator/FastFood.P
     /p:CopyOutputSymbolsToPublishDirectory=false \
     /p:CopyOutputXmlDocumentationToPublishDirectory=false
 
+# Preparar migrações: copiar para pasta temporária, garantindo que sempre exista
+RUN mkdir -p /migrations && \
+    if [ -d "src/Infra/FastFood.PayStream.Infra.Persistence/Migrations" ] && [ "$(find src/Infra/FastFood.PayStream.Infra.Persistence/Migrations -type f 2>/dev/null | wc -l)" -gt 0 ]; then \
+        cp -r src/Infra/FastFood.PayStream.Infra.Persistence/Migrations/* /migrations/ 2>/dev/null || true; \
+    fi && \
+    # Garantir que a pasta não esteja vazia (evita erro no COPY)
+    if [ ! "$(ls -A /migrations 2>/dev/null)" ]; then \
+        touch /migrations/.keep; \
+    fi
+
 # Etapa 2: imagem final para execução
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
@@ -31,9 +41,7 @@ COPY --from=build /out ./
 # Copiar arquivos de configuração
 COPY src/InterfacesExternas/FastFood.PayStream.Migrator/appsettings.json ./appsettings.json
 
-# Copiar migrações do projeto FastFood.PayStream.Infra.Persistence
-COPY src/Infra/FastFood.PayStream.Infra.Persistence/Migrations ./Migrations
+# Copiar migrações do build stage (sempre terá pelo menos o arquivo .keep)
+COPY --from=build /migrations ./Migrations
 
 ENTRYPOINT ["dotnet", "FastFood.PayStream.Migrator.dll"]
-
-
