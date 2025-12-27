@@ -62,43 +62,48 @@ PADRÃO DE ARQUITETURA (.NET / CLEAN ARCH + GATEWAY)
 
 Todos os serviços .NET seguem o mesmo padrão de pastas (ajuste nomes conforme o repo):
 
-/Domain
+**Estrutura de Diretórios:**
+```
+src/
+├── Core/                    # Camadas que utilizamos (lógica de negócio)
+│   ├── Domain/              # Entidades de domínio, VOs, enums e regras de negócio puras
+│   ├── Application/         # UseCases, Ports, InputModels, OutputModels, Presenters, Responses
+│   └── CrossCutting/        # Extensões e utilitários compartilhados
+├── Infra/                   # Camadas de infraestrutura
+│   ├── Infra/               # Serviços externos (SQS, Mercado Pago, etc.)
+│   └── Infra.Persistence/   # Repositórios, DbContext, EF Core, Migrations
+├── InterfacesExternas/      # Camadas que usamos (adapters de entrada/saída)
+│   ├── Api/                 # API HTTP ASP.NET Core (ou Lambda)
+│   └── Migrator/            # Console app para executar migrations
+└── tests/                   # Testes automatizados
+    ├── Tests.Unit/          # Testes unitários
+    └── Tests.Bdd/           # Testes BDD/SpecFlow
+```
+
+**Camadas:**
+
+/Domain (em Core/)
   - Entidades de domínio, VOs, enums e regras de negócio puras.
   - Sem dependência de EF, Dynamo client, SQS, HTTP, etc.
 
-/UseCases
-  - Casos de uso (aplicação).
-  - Orquestram o fluxo, combinam regras, chamam Gateways.
-  - Conhecem apenas Domain + interfaces de Gateways, nunca implementações concretas.
+/Application (em Core/)
+  - UseCases: Casos de uso (aplicação). Orquestram o fluxo, combinam regras, chamam Gateways. Conhecem apenas Domain + interfaces de Gateways, nunca implementações concretas.
+  - Responses: ResponseModels (Application Responses) que definem o contrato de saída dos UseCases. Devem estar na camada Application. Representam os dados que serão retornados pela API.
+  - Presenters: Presenters que fazem adaptação/transformação dos Application Responses quando necessário. Devem estar na camada Application. Por padrão apenas retornam o response, mas podem fazer transformações se necessário. API consome os Responses através dos Presenters.
+  - Ports: Interfaces que definem como os UseCases conversam com o "mundo externo" (IOrderGateway, IPaymentGateway, ISqsGateway, IMercadoPagoGateway). Concentram contratos e DTOs de infra (sem lógica de negócio).
 
-/Responses
-  - ResponseModels (Application Responses) que definem o contrato de saída dos UseCases.
-  - Devem estar na camada Application.
-  - Representam os dados que serão retornados pela API.
-
-/Presenters
-  - Presenters que fazem adaptação/transformação dos Application Responses quando necessário.
-  - Devem estar na camada Application.
-  - Por padrão apenas retornam o response, mas podem fazer transformações se necessário.
-  - API consome os Responses através dos Presenters.
-
-/Gateways
-  - Interfaces que definem como os UseCases conversam com o "mundo externo":
-    - Acesso a banco (ex.: IOrderGateway, IPaymentGateway).
-    - Acesso a SQS (ISqsGateway).
-    - Acesso a serviços externos (IMercadoPagoGateway).
-  - Concentram contratos e DTOs de infra (sem lógica de negócio).
-
-/DataSource ou /Infra.Persistence /Infra.External
-  - Implementações concretas dos Gateways.
-  - Aqui entram:
-    - Repositórios EF/Dapper (Postgres).
-    - Clientes DynamoDB.
-    - Clientes SQS.
-    - Clientes Mercado Pago.
+/Infra (em Infra/)
+  - Implementações concretas de serviços externos (SQS, Mercado Pago, etc.).
   - Esta camada pode referenciar bibliotecas externas, SDKs, drivers etc.
 
-/Api
+/Infra.Persistence (em Infra/)
+  - Implementações concretas dos Gateways de persistência.
+  - Aqui entram:
+    - Repositórios EF/Dapper (Postgres).
+    - DbContext, Configurations, Migrations.
+  - Esta camada pode referenciar bibliotecas externas, SDKs, drivers etc.
+
+/Api (em InterfacesExternas/)
   - Projeto ASP.NET Core (ou Lambda HTTP).
   - Controllers, endpoints, DTOs de request (RequestModels).
   - NÃO deve ter ResponseModels duplicados (usa Application Responses).
@@ -107,7 +112,7 @@ Todos os serviços .NET seguem o mesmo padrão de pastas (ajuste nomes conforme 
   - Sempre chama UseCases, passando Commands/Queries.
   - Usa Presenters da Application para obter Responses formatados.
 
-/Tests
+/Tests (em tests/)
   - Testes unitários de UseCases, Gateways (com mocks) e comportamento de controllers.
   - Testes BDD para pelo menos 1 fluxo crítico de cada serviço.
 

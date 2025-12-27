@@ -12,7 +12,7 @@ Criar o Dockerfile para o Migrator FastFood.PayStream.Migrator usando multi-stag
 - Copiar arquivos `.csproj` e fazer restore antes de copiar todo o código
 - Publicar o Migrator com configurações otimizadas
 - Copiar arquivo `appsettings.json` do Migrator para a imagem
-- Copiar pasta `Migrations/` do projeto `FastFood.PayStream.Infra.Persistence` para a imagem
+- Copiar pasta `Migrations/` do projeto `FastFood.PayStream.Infra.Persistence` (em `src/Infra/`) para a imagem
 - Definir ENTRYPOINT para executar `FastFood.PayStream.Migrator.dll`
 
 ## Como testar

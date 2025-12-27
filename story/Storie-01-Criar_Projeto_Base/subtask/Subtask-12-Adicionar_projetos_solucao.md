@@ -7,9 +7,10 @@ Adicionar todos os projetos criados ao arquivo de solução (.sln) para que poss
 - Adicionar todos os projetos Core à solução:
   - `dotnet sln add src/Core/FastFood.PayStream.Domain/FastFood.PayStream.Domain.csproj`
   - `dotnet sln add src/Core/FastFood.PayStream.Application/FastFood.PayStream.Application.csproj`
-  - `dotnet sln add src/Core/FastFood.PayStream.Infra/FastFood.PayStream.Infra.csproj`
-  - `dotnet sln add src/Core/FastFood.PayStream.Infra.Persistence/FastFood.PayStream.Infra.Persistence.csproj`
   - `dotnet sln add src/Core/FastFood.PayStream.CrossCutting/FastFood.PayStream.CrossCutting.csproj`
+- Adicionar todos os projetos Infra à solução:
+  - `dotnet sln add src/Infra/FastFood.PayStream.Infra/FastFood.PayStream.Infra.csproj`
+  - `dotnet sln add src/Infra/FastFood.PayStream.Infra.Persistence/FastFood.PayStream.Infra.Persistence.csproj`
 - Adicionar projetos InterfacesExternas:
   - `dotnet sln add src/InterfacesExternas/FastFood.PayStream.Api/FastFood.PayStream.Api.csproj`
   - `dotnet sln add src/InterfacesExternas/FastFood.PayStream.Migrator/FastFood.PayStream.Migrator.csproj`

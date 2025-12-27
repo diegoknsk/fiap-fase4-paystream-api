@@ -1,13 +1,13 @@
 # Subtask 05: Criar projeto Infra.Persistence
 
 ## Descrição
-Criar o projeto `FastFood.PayStream.Infra.Persistence` na pasta `src/Core/`, que será a camada de persistência contendo repositórios, DbContext, configurações do Entity Framework Core e migrations para PostgreSQL.
+Criar o projeto `FastFood.PayStream.Infra.Persistence` na pasta `src/Infra/`, que será a camada de persistência contendo repositórios, DbContext, configurações do Entity Framework Core e migrations para PostgreSQL.
 
 ## Passos de implementação
-- Criar pasta `src/Core/FastFood.PayStream.Infra.Persistence/`
+- Criar pasta `src/Infra/FastFood.PayStream.Infra.Persistence/`
 - Executar `dotnet new classlib -n FastFood.PayStream.Infra.Persistence -f net8.0` na pasta criada
 - Adicionar referências:
-  - `dotnet add reference ../FastFood.PayStream.Domain/FastFood.PayStream.Domain.csproj`
+  - `dotnet add reference ../../Core/FastFood.PayStream.Domain/FastFood.PayStream.Domain.csproj`
   - `dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL` (versão compatível com .NET 8)
   - `dotnet add package Microsoft.EntityFrameworkCore.Design` (para migrations)
 - Criar estrutura de pastas:
@@ -25,7 +25,7 @@ Criar o projeto `FastFood.PayStream.Infra.Persistence` na pasta `src/Core/`, que
 - Verificar estrutura de pastas criada
 
 ## Critérios de aceite
-- Projeto `FastFood.PayStream.Infra.Persistence` criado em `src/Core/FastFood.PayStream.Infra.Persistence/`
+- Projeto `FastFood.PayStream.Infra.Persistence` criado em `src/Infra/FastFood.PayStream.Infra.Persistence/`
 - Estrutura de pastas criada (Repositories, Entities, Configurations, Migrations)
 - Pacote `Npgsql.EntityFrameworkCore.PostgreSQL` adicionado
 - Pacote `Microsoft.EntityFrameworkCore.Design` adicionado

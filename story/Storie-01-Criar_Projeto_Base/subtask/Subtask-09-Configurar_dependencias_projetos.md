@@ -7,8 +7,8 @@ Verificar e ajustar todas as dependências entre os projetos criados, garantindo
 - Revisar todas as referências de projetos criadas nas subtasks anteriores
 - Verificar que Domain não referencia ninguém
 - Verificar que Application referencia apenas Domain
-- Verificar que Infra referencia Application e Domain
-- Verificar que Infra.Persistence referencia apenas Domain
+- Verificar que Infra (em `src/Infra/`) referencia Application e Domain
+- Verificar que Infra.Persistence (em `src/Infra/`) referencia apenas Domain
 - Verificar que CrossCutting referencia Application e Domain
 - Verificar que Api referencia Application, CrossCutting e Infra (não deve referenciar Domain diretamente)
 - Verificar que Migrator referencia Infra.Persistence e CrossCutting
@@ -25,8 +25,8 @@ Verificar e ajustar todas as dependências entre os projetos criados, garantindo
 - Todas as dependências entre projetos estão corretas conforme Clean Architecture
 - Domain não referencia nenhum outro projeto
 - Application referencia apenas Domain
-- Infra referencia Application e Domain
-- Infra.Persistence referencia apenas Domain
+- Infra (em `src/Infra/`) referencia Application e Domain
+- Infra.Persistence (em `src/Infra/`) referencia apenas Domain
 - CrossCutting referencia Application e Domain
 - Api referencia Application, CrossCutting e Infra (não Domain diretamente)
 - Migrator referencia Infra.Persistence e CrossCutting

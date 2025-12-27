@@ -11,9 +11,9 @@ Criar a solução .NET 8 com todas as camadas (Domain, Application, Infra, Infra
 - Estrutura de pastas conforme `paystream-context.mdc`:
   - `src/Core/FastFood.PayStream.Domain/`
   - `src/Core/FastFood.PayStream.Application/`
-  - `src/Core/FastFood.PayStream.Infra/`
-  - `src/Core/FastFood.PayStream.Infra.Persistence/`
   - `src/Core/FastFood.PayStream.CrossCutting/`
+  - `src/Infra/FastFood.PayStream.Infra/`
+  - `src/Infra/FastFood.PayStream.Infra.Persistence/`
   - `src/InterfacesExternas/FastFood.PayStream.Api/`
   - `src/InterfacesExternas/FastFood.PayStream.Migrator/`
   - `src/tests/FastFood.PayStream.Tests.Unit/`

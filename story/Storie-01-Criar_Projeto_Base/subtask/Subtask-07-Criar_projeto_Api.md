@@ -9,7 +9,7 @@ Criar o projeto `FastFood.PayStream.Api` na pasta `src/InterfacesExternas/`, que
 - Adicionar referências:
   - `dotnet add reference ../../Core/FastFood.PayStream.Application/FastFood.PayStream.Application.csproj`
   - `dotnet add reference ../../Core/FastFood.PayStream.CrossCutting/FastFood.PayStream.CrossCutting.csproj`
-  - `dotnet add reference ../../Core/FastFood.PayStream.Infra/FastFood.PayStream.Infra.csproj`
+  - `dotnet add reference ../../Infra/FastFood.PayStream.Infra/FastFood.PayStream.Infra.csproj`
 - Criar estrutura de pastas:
   - `Controllers/` (para controllers HTTP)
 - Configurar Swagger no `Program.cs` (já vem configurado por padrão no template webapi)

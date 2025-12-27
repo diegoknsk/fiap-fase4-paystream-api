@@ -7,7 +7,7 @@ Criar o projeto `FastFood.PayStream.Migrator` na pasta `src/InterfacesExternas/`
 - Criar pasta `src/InterfacesExternas/FastFood.PayStream.Migrator/`
 - Executar `dotnet new console -n FastFood.PayStream.Migrator -f net8.0` na pasta criada
 - Adicionar referências:
-  - `dotnet add reference ../../Core/FastFood.PayStream.Infra.Persistence/FastFood.PayStream.Infra.Persistence.csproj`
+  - `dotnet add reference ../../Infra/FastFood.PayStream.Infra.Persistence/FastFood.PayStream.Infra.Persistence.csproj`
   - `dotnet add reference ../../Core/FastFood.PayStream.CrossCutting/FastFood.PayStream.CrossCutting.csproj`
 - Criar arquivo `Program.cs` básico (será implementado nas próximas stories quando tivermos migrations)
 - O Program.cs inicial pode apenas ter um `Console.WriteLine("Migrator - To be implemented")`

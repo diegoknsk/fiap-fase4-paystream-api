@@ -136,21 +136,22 @@ fiap-fase4-paystream-api/
 │   │   │   ├── Ports/              # Interfaces de Gateways (IPaymentGateway, IMercadoPagoGateway, ISqsGateway)
 │   │   │   └── FastFood.PayStream.Application.csproj
 │   │   │
+│   │   └── FastFood.PayStream.CrossCutting/
+│   │       ├── Extensions/         # Extensões (ServiceCollectionExtensions, etc.)
+│   │       └── FastFood.PayStream.CrossCutting.csproj
+│   │
+│   ├── Infra/
 │   │   ├── FastFood.PayStream.Infra/
 │   │   │   ├── Services/          # Implementações de serviços externos (SQS, Mercado Pago, etc.)
 │   │   │   └── FastFood.PayStream.Infra.csproj
 │   │   │
-│   │   ├── FastFood.PayStream.Infra.Persistence/
-│   │   │   ├── Repositories/      # Implementações de repositórios PostgreSQL (EF Core)
-│   │   │   ├── Entities/          # Entidades de persistência (se necessário)
-│   │   │   ├── Configurations/    # Configurações EF Core (Fluent API)
-│   │   │   ├── Migrations/        # Migrações do Entity Framework
-│   │   │   ├── PayStreamDbContext.cs
-│   │   │   └── FastFood.PayStream.Infra.Persistence.csproj
-│   │   │
-│   │   └── FastFood.PayStream.CrossCutting/
-│   │       ├── Extensions/         # Extensões (ServiceCollectionExtensions, etc.)
-│   │       └── FastFood.PayStream.CrossCutting.csproj
+│   │   └── FastFood.PayStream.Infra.Persistence/
+│   │       ├── Repositories/      # Implementações de repositórios PostgreSQL (EF Core)
+│   │       ├── Entities/          # Entidades de persistência (se necessário)
+│   │       ├── Configurations/    # Configurações EF Core (Fluent API)
+│   │       ├── Migrations/        # Migrações do Entity Framework
+│   │       ├── PayStreamDbContext.cs
+│   │       └── FastFood.PayStream.Infra.Persistence.csproj
 │   │
 │   ├── InterfacesExternas/
 │   │   ├── FastFood.PayStream.Api/  # API HTTP ASP.NET Core (para EKS)
@@ -175,9 +176,10 @@ fiap-fase4-paystream-api/
 ```
 
 **Organização da Solução (.sln):**
-- Projetos Core dentro de `Core`
-- Projetos de API/Migrator dentro de `InterfacesExternas`
-- Projetos de testes dentro de `Tests`
+- Projetos Core dentro de `src/Core` (Domain, Application, CrossCutting)
+- Projetos de Infra dentro de `src/Infra` (Infra, Infra.Persistence)
+- Projetos de API/Migrator dentro de `src/InterfacesExternas`
+- Projetos de testes dentro de `src/tests`
 - **SEMPRE adicionar novos projetos ao arquivo de solução após criá-los**
 
 **Nomenclatura de Projetos:**
