@@ -1,8 +1,8 @@
 # Storie-05: Criar PaymentController e WebhookPaymentController
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 02/01/2026
 
 ## Descrição
 Como desenvolvedor, quero criar a estrutura básica dos controllers PaymentController e WebhookPaymentController na API, seguindo o padrão de Clean Architecture do projeto orderhub, para que possamos expor os endpoints de pagamento e webhook de forma organizada e seguindo as convenções estabelecidas.
@@ -27,24 +27,24 @@ Criar os controllers `PaymentController` e `WebhookPaymentController` com a estr
 
 ## Subtasks
 
-- [ ] [Subtask 01: Verificar estrutura de ApiResponse e criar se necessário](./subtask/Subtask-01-Verificar_criar_ApiResponse.md)
-- [ ] [Subtask 02: Criar estrutura básica do PaymentController](./subtask/Subtask-02-Criar_PaymentController_basico.md)
-- [ ] [Subtask 03: Criar estrutura básica do WebhookPaymentController](./subtask/Subtask-03-Criar_WebhookPaymentController_basico.md)
-- [ ] [Subtask 04: Configurar documentação Swagger nos controllers](./subtask/Subtask-04-Configurar_Swagger_controllers.md)
-- [ ] [Subtask 05: Registrar controllers e validar compilação](./subtask/Subtask-05-Registrar_validar_controllers.md)
+- [x] [Subtask 01: Verificar estrutura de ApiResponse e criar se necessário](./subtask/Subtask-01-Verificar_criar_ApiResponse.md)
+- [x] [Subtask 02: Criar estrutura básica do PaymentController](./subtask/Subtask-02-Criar_PaymentController_basico.md)
+- [x] [Subtask 03: Criar estrutura básica do WebhookPaymentController](./subtask/Subtask-03-Criar_WebhookPaymentController_basico.md)
+- [x] [Subtask 04: Configurar documentação Swagger nos controllers](./subtask/Subtask-04-Configurar_Swagger_controllers.md)
+- [x] [Subtask 05: Registrar controllers e validar compilação](./subtask/Subtask-05-Registrar_validar_controllers.md)
 
 ## Critérios de Aceite da História
 
-- [ ] Classe `ApiResponse<T>` existe na camada Application ou CrossCutting (seguindo padrão do orderhub)
-- [ ] `PaymentController` criado em `src/InterfacesExternas/FastFood.PayStream.Api/Controllers/PaymentController.cs`
-- [ ] `PaymentController` herda de `ControllerBase`
-- [ ] `PaymentController` tem atributo `[ApiController]` e `[Route("api/[controller]")]`
-- [ ] `PaymentController` tem construtor preparado para receber UseCases (comentado ou vazio por enquanto)
-- [ ] `WebhookPaymentController` criado em `src/InterfacesExternas/FastFood.PayStream.Api/Controllers/WebhookPaymentController.cs`
-- [ ] `WebhookPaymentController` herda de `ControllerBase`
-- [ ] `WebhookPaymentController` tem atributo `[ApiController]` e `[Route("api/[controller]")]`
-- [ ] `WebhookPaymentController` tem construtor preparado para receber UseCases (comentado ou vazio por enquanto)
-- [ ] Ambos controllers têm comentários XML para documentação Swagger
-- [ ] Projeto Api compila sem erros
-- [ ] Swagger exibe os controllers (mesmo sem endpoints ainda)
-- [ ] Estrutura segue padrão do projeto orderhub (UseCases injetados, não orchestrators)
+- [x] Classe `ApiResponse<T>` existe na camada Application ou CrossCutting (seguindo padrão do orderhub)
+- [x] `PaymentController` criado em `src/InterfacesExternas/FastFood.PayStream.Api/Controllers/PaymentController.cs`
+- [x] `PaymentController` herda de `ControllerBase`
+- [x] `PaymentController` tem atributo `[ApiController]` e `[Route("api/[controller]")]`
+- [x] `PaymentController` tem construtor preparado para receber UseCases (comentado ou vazio por enquanto)
+- [x] `WebhookPaymentController` criado em `src/InterfacesExternas/FastFood.PayStream.Api/Controllers/WebhookPaymentController.cs`
+- [x] `WebhookPaymentController` herda de `ControllerBase`
+- [x] `WebhookPaymentController` tem atributo `[ApiController]` e `[Route("api/[controller]")]`
+- [x] `WebhookPaymentController` tem construtor preparado para receber UseCases (comentado ou vazio por enquanto)
+- [x] Ambos controllers têm comentários XML para documentação Swagger
+- [x] Projeto Api compila sem erros
+- [x] Swagger exibe os controllers (mesmo sem endpoints ainda)
+- [x] Estrutura segue padrão do projeto orderhub (UseCases injetados, não orchestrators)
