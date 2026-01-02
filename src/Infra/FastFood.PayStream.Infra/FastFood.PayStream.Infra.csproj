@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\FastFood.PayStream.Application\FastFood.PayStream.Application.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -15,14 +15,23 @@ namespace FastFood.PayStream.Api.Controllers;
 public class PaymentController : ControllerBase
 {
     private readonly CreatePaymentUseCase _createPaymentUseCase;
+    private readonly GenerateQrCodeUseCase _generateQrCodeUseCase;
+    private readonly GetReceiptUseCase _getReceiptUseCase;
 
     /// <summary>
     /// Construtor do PaymentController.
     /// </summary>
     /// <param name="createPaymentUseCase">UseCase para criação de pagamentos.</param>
-    public PaymentController(CreatePaymentUseCase createPaymentUseCase)
+    /// <param name="generateQrCodeUseCase">UseCase para geração de QR Code.</param>
+    /// <param name="getReceiptUseCase">UseCase para obtenção de comprovante.</param>
+    public PaymentController(
+        CreatePaymentUseCase createPaymentUseCase,
+        GenerateQrCodeUseCase generateQrCodeUseCase,
+        GetReceiptUseCase getReceiptUseCase)
     {
         _createPaymentUseCase = createPaymentUseCase;
+        _generateQrCodeUseCase = generateQrCodeUseCase;
+        _getReceiptUseCase = getReceiptUseCase;
     }
 
     /// <summary>
@@ -48,7 +57,79 @@ public class PaymentController : ControllerBase
         }
     }
 
-    // Endpoints a serem implementados nas próximas stories:
-    // - POST /api/payment/{id}/generate-qrcode - Gerar QR Code
-    // - GET /api/payment/{id}/receipt - Obter comprovante
+    /// <summary>
+    /// Gera um QR Code para pagamento.
+    /// </summary>
+    /// <param name="orderId">ID do pedido relacionado ao pagamento.</param>
+    /// <param name="fakeCheckout">Indica se deve usar gateway fake para desenvolvimento/testes (default: false).</param>
+    /// <returns>Dados do QR Code gerado.</returns>
+    /// <response code="200">QR Code gerado com sucesso.</response>
+    /// <response code="400">Dados inválidos fornecidos.</response>
+    /// <response code="404">Pagamento não encontrado.</response>
+    [HttpPost("generate-qrcode")]
+    [ProducesResponseType(typeof(ApiResponse<GenerateQrCodeResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<GenerateQrCodeResponse>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<GenerateQrCodeResponse>), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GenerateQrCode([FromQuery] Guid orderId, [FromQuery] bool fakeCheckout = false)
+    {
+        try
+        {
+            var input = new GenerateQrCodeInputModel
+            {
+                OrderId = orderId,
+                FakeCheckout = fakeCheckout
+            };
+
+            var response = await _generateQrCodeUseCase.ExecuteAsync(input);
+            return Ok(ApiResponse<GenerateQrCodeResponse>.Ok(response, "QR Code gerado com sucesso."));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ApiResponse<GenerateQrCodeResponse>.Fail(ex.Message));
+        }
+        catch (ApplicationException ex)
+        {
+            return NotFound(ApiResponse<GenerateQrCodeResponse>.Fail(ex.Message));
+        }
+    }
+
+    /// <summary>
+    /// Obtém o comprovante de pagamento do gateway.
+    /// </summary>
+    /// <param name="orderId">ID do pedido relacionado ao pagamento.</param>
+    /// <param name="fakeCheckout">Indica se deve usar gateway fake para desenvolvimento/testes (default: false).</param>
+    /// <returns>Dados do comprovante de pagamento.</returns>
+    /// <response code="200">Comprovante obtido com sucesso.</response>
+    /// <response code="400">Dados inválidos fornecidos ou pagamento não possui ExternalTransactionId.</response>
+    /// <response code="404">Pagamento não encontrado.</response>
+    [HttpGet("receipt-from-gateway")]
+    [ProducesResponseType(typeof(ApiResponse<GetReceiptResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<GetReceiptResponse>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<GetReceiptResponse>), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetReceiptFromGateway([FromQuery] Guid orderId, [FromQuery] bool fakeCheckout = false)
+    {
+        try
+        {
+            var input = new GetReceiptInputModel
+            {
+                OrderId = orderId,
+                FakeCheckout = fakeCheckout
+            };
+
+            var response = await _getReceiptUseCase.ExecuteAsync(input);
+            return Ok(ApiResponse<GetReceiptResponse>.Ok(response, "Comprovante obtido com sucesso."));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ApiResponse<GetReceiptResponse>.Fail(ex.Message));
+        }
+        catch (ApplicationException ex)
+        {
+            if (ex.Message.Contains("não encontrado"))
+            {
+                return NotFound(ApiResponse<GetReceiptResponse>.Fail(ex.Message));
+            }
+            return BadRequest(ApiResponse<GetReceiptResponse>.Fail(ex.Message));
+        }
+    }
 }

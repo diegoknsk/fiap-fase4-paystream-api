@@ -4,6 +4,7 @@ using FastFood.PayStream.Application.Ports;
 using FastFood.PayStream.Infra.Persistence.Repositories;
 using FastFood.PayStream.Application.Presenters;
 using FastFood.PayStream.Application.UseCases;
+using FastFood.PayStream.Infra.Services;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,9 +26,31 @@ builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 
 // Registrar Presenters
 builder.Services.AddScoped<CreatePaymentPresenter>();
+builder.Services.AddScoped<GenerateQrCodePresenter>();
+builder.Services.AddScoped<GetReceiptPresenter>();
+
+// Registrar Gateways de Pagamento
+builder.Services.AddScoped<PaymentFakeGateway>();
+builder.Services.AddScoped<PaymentMercadoPagoGateway>();
 
 // Registrar UseCases
 builder.Services.AddScoped<CreatePaymentUseCase>();
+builder.Services.AddScoped<GenerateQrCodeUseCase>(sp =>
+{
+    var paymentRepository = sp.GetRequiredService<IPaymentRepository>();
+    var realGateway = sp.GetRequiredService<PaymentMercadoPagoGateway>();
+    var fakeGateway = sp.GetRequiredService<PaymentFakeGateway>();
+    var presenter = sp.GetRequiredService<GenerateQrCodePresenter>();
+    return new GenerateQrCodeUseCase(paymentRepository, realGateway, fakeGateway, presenter);
+});
+builder.Services.AddScoped<GetReceiptUseCase>(sp =>
+{
+    var paymentRepository = sp.GetRequiredService<IPaymentRepository>();
+    var realGateway = sp.GetRequiredService<PaymentMercadoPagoGateway>();
+    var fakeGateway = sp.GetRequiredService<PaymentFakeGateway>();
+    var presenter = sp.GetRequiredService<GetReceiptPresenter>();
+    return new GetReceiptUseCase(paymentRepository, realGateway, fakeGateway, presenter);
+});
 
 // Add services to the container.
 builder.Services.AddControllers();
