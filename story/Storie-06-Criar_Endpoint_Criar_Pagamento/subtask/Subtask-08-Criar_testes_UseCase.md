@@ -1,8 +1,8 @@
 # Subtask 08: Criar testes unitários do UseCase
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 02/01/2026
 
 ## Descrição
 Criar testes unitários completos para o CreatePaymentUseCase, validando todos os cenários: sucesso, validações de entrada e comportamento do repositório.

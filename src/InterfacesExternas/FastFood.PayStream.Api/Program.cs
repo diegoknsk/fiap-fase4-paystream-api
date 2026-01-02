@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using FastFood.PayStream.Infra.Persistence;
+using FastFood.PayStream.Application.Ports;
+using FastFood.PayStream.Infra.Persistence.Repositories;
+using FastFood.PayStream.Application.Presenters;
+using FastFood.PayStream.Application.UseCases;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +19,15 @@ if (string.IsNullOrWhiteSpace(dbConnectionString))
 // Registrar DbContext com PostgreSQL
 builder.Services.AddDbContext<PayStreamDbContext>(options =>
     options.UseNpgsql(dbConnectionString));
+
+// Registrar repositórios
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+
+// Registrar Presenters
+builder.Services.AddScoped<CreatePaymentPresenter>();
+
+// Registrar UseCases
+builder.Services.AddScoped<CreatePaymentUseCase>();
 
 // Add services to the container.
 builder.Services.AddControllers();

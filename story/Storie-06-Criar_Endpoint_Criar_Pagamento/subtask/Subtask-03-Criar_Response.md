@@ -1,8 +1,8 @@
 # Subtask 03: Criar Response CreatePaymentResponse
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 02/01/2026
 
 ## Descrição
 Criar o Response que será retornado pelo endpoint, seguindo o padrão do projeto orderhub onde Response tem a mesma estrutura do OutputModel.

@@ -1,8 +1,8 @@
 # Subtask 07: Criar endpoint POST no PaymentController
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 02/01/2026
 
 ## Descrição
 Criar o endpoint POST no PaymentController para criar novo pagamento, injetando o UseCase e retornando resposta padronizada.

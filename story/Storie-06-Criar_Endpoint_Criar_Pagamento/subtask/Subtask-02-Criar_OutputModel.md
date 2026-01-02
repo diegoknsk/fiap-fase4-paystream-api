@@ -1,8 +1,8 @@
 # Subtask 02: Criar OutputModel CreatePaymentOutputModel
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 02/01/2026
 
 ## Descrição
 Criar o OutputModel que será usado pelo UseCase para retornar os dados do pagamento criado, antes de ser transformado em Response pelo Presenter.

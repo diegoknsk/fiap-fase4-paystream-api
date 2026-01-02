@@ -1,8 +1,8 @@
 # Subtask 01: Criar InputModel CreatePaymentInputModel
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 02/01/2026
 
 ## Descrição
 Criar o InputModel que será usado para receber os dados de criação de pagamento no endpoint, contendo OrderId, TotalAmount e OrderSnapshot.

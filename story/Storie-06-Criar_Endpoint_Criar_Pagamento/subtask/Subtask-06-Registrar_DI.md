@@ -1,8 +1,8 @@
 # Subtask 06: Registrar UseCase e Presenter no DI
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 02/01/2026
 
 ## Descrição
 Registrar o UseCase CreatePaymentUseCase e o Presenter CreatePaymentPresenter no container de injeção de dependência no Program.cs da API.

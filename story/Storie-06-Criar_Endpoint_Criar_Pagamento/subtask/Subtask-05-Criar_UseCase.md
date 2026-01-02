@@ -1,8 +1,8 @@
 # Subtask 05: Criar UseCase CreatePaymentUseCase
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 02/01/2026
 
 ## Descrição
 Criar o UseCase que orquestra a criação de pagamento, validando dados de entrada, criando a entidade de domínio Payment com status NotStarted, persistindo no repositório e retornando o OutputModel.
