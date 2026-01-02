@@ -20,4 +20,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\FastFood.PayStream.Domain\FastFood.PayStream.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
