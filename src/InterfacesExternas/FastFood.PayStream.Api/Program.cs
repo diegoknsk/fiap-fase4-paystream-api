@@ -28,6 +28,7 @@ builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<CreatePaymentPresenter>();
 builder.Services.AddScoped<GenerateQrCodePresenter>();
 builder.Services.AddScoped<GetReceiptPresenter>();
+builder.Services.AddScoped<PaymentNotificationPresenter>();
 
 // Registrar Gateways de Pagamento
 builder.Services.AddScoped<PaymentFakeGateway>();
@@ -50,6 +51,14 @@ builder.Services.AddScoped<GetReceiptUseCase>(sp =>
     var fakeGateway = sp.GetRequiredService<PaymentFakeGateway>();
     var presenter = sp.GetRequiredService<GetReceiptPresenter>();
     return new GetReceiptUseCase(paymentRepository, realGateway, fakeGateway, presenter);
+});
+builder.Services.AddScoped<PaymentNotificationUseCase>(sp =>
+{
+    var paymentRepository = sp.GetRequiredService<IPaymentRepository>();
+    var realGateway = sp.GetRequiredService<PaymentMercadoPagoGateway>();
+    var fakeGateway = sp.GetRequiredService<PaymentFakeGateway>();
+    var presenter = sp.GetRequiredService<PaymentNotificationPresenter>();
+    return new PaymentNotificationUseCase(paymentRepository, realGateway, fakeGateway, presenter);
 });
 
 // Add services to the container.
