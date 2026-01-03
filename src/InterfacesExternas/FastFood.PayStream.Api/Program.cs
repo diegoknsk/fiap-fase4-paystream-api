@@ -6,6 +6,13 @@ using FastFood.PayStream.Application.Presenters;
 using FastFood.PayStream.Application.UseCases;
 using FastFood.PayStream.Infra.Services;
 using System.Reflection;
+using FastFood.PayStream.Infra.Auth;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
+using FastFood.PayStream.Api.Config.Auth;
+
+// Configurar JWT Security Token Handler
+JwtAuthenticationConfig.ConfigureJwtSecurityTokenHandler();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -73,7 +80,44 @@ builder.Services.AddSwaggerGen(c =>
     {
         c.IncludeXmlComments(xmlPath);
     }
+
+    // CustomerBearer scheme
+    c.AddSecurityDefinition("CustomerBearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "Customer token (Bearer {token})"
+    });
+
+    // Cognito scheme
+    c.AddSecurityDefinition("Cognito", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "JWT Bearer do Cognito. Ex: 'Bearer {token}'"
+    });
+
+    c.OperationFilter<AuthorizeBySchemeOperationFilter>();
 });
+
+// Configure authentication
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddCustomerJwtBearer(builder.Configuration)
+    .AddCognitoJwtBearer(builder.Configuration);
+
+// Configure authorization policies
+builder.Services.AddAuthorizationPolicies();
 
 var app = builder.Build();
 
@@ -86,6 +130,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

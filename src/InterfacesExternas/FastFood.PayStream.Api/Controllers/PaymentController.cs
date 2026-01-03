@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using FastFood.PayStream.Application.Models.Common;
 using FastFood.PayStream.Application.InputModels;
 using FastFood.PayStream.Application.UseCases;
@@ -42,6 +43,7 @@ public class PaymentController : ControllerBase
     /// <response code="201">Pagamento criado com sucesso.</response>
     /// <response code="400">Dados inválidos fornecidos.</response>
     [HttpPost("create")]
+    [Authorize(AuthenticationSchemes = "CustomerBearer", Policy = "Customer")]
     [ProducesResponseType(typeof(ApiResponse<CreatePaymentResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse<CreatePaymentResponse>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreatePaymentInputModel input)
@@ -67,6 +69,7 @@ public class PaymentController : ControllerBase
     /// <response code="400">Dados inválidos fornecidos.</response>
     /// <response code="404">Pagamento não encontrado.</response>
     [HttpPost("generate-qrcode")]
+    [Authorize(AuthenticationSchemes = "CustomerBearer", Policy = "Customer")]
     [ProducesResponseType(typeof(ApiResponse<GenerateQrCodeResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<GenerateQrCodeResponse>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse<GenerateQrCodeResponse>), StatusCodes.Status404NotFound)]
@@ -103,6 +106,7 @@ public class PaymentController : ControllerBase
     /// <response code="400">Dados inválidos fornecidos ou pagamento não possui ExternalTransactionId.</response>
     /// <response code="404">Pagamento não encontrado.</response>
     [HttpGet("receipt-from-gateway")]
+    [Authorize(AuthenticationSchemes = "CustomerBearer", Policy = "Customer")]
     [ProducesResponseType(typeof(ApiResponse<GetReceiptResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<GetReceiptResponse>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse<GetReceiptResponse>), StatusCodes.Status404NotFound)]
