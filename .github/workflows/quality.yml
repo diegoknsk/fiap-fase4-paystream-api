@@ -159,6 +159,25 @@ jobs:
             exit 1
           fi
 
+      - name: Sonar - End
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          echo "=== Final verification before Sonar End ==="
+          COVERAGE_PATH="TestResults/coverage/coverage.opencover.xml"
+          if [ -f "$COVERAGE_PATH" ]; then
+            echo "✓ Coverage file confirmed at: $COVERAGE_PATH"
+            echo "File size: $(stat -c%s "$COVERAGE_PATH" 2>/dev/null || echo "unknown") bytes"
+            echo "File path (absolute): ${{ github.workspace }}/$COVERAGE_PATH"
+          else
+            echo "✗ WARNING: Coverage file not found at $COVERAGE_PATH"
+            echo "Searching for coverage files..."
+            find . -name "*.opencover.xml" -type f 2>/dev/null || echo "No coverage files found"
+          fi
+          echo ""
+          echo "=== Running Sonar End (sending coverage to SonarCloud) ==="
+          dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"
+
       - name: Check Coverage Threshold (85%)
         run: |
           echo "=== Checking Coverage Threshold ==="
@@ -227,25 +246,7 @@ jobs:
             echo "=========================================="
             echo "The code coverage is below the minimum threshold of ${MIN_COVERAGE}%"
             echo "Please add more tests to increase coverage before merging."
+            echo "Note: Coverage data was already sent to SonarCloud."
             echo "=========================================="
             exit 1
           fi
-
-      - name: Sonar - End
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          echo "=== Final verification before Sonar End ==="
-          COVERAGE_PATH="TestResults/coverage/coverage.opencover.xml"
-          if [ -f "$COVERAGE_PATH" ]; then
-            echo "✓ Coverage file confirmed at: $COVERAGE_PATH"
-            echo "File size: $(stat -c%s "$COVERAGE_PATH" 2>/dev/null || echo "unknown") bytes"
-            echo "File path (absolute): ${{ github.workspace }}/$COVERAGE_PATH"
-          else
-            echo "✗ WARNING: Coverage file not found at $COVERAGE_PATH"
-            echo "Searching for coverage files..."
-            find . -name "*.opencover.xml" -type f 2>/dev/null || echo "No coverage files found"
-          fi
-          echo ""
-          echo "=== Running Sonar End ==="
-          dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"
