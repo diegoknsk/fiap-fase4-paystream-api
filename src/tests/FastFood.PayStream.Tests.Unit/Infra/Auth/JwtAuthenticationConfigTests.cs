@@ -50,6 +50,24 @@ public class JwtAuthenticationConfigTests
     // mas a validação falhará quando um token for processado.
 
     [Fact]
+    public void AddCustomerJwtBearer_ShouldConfigureTokenValidationParameters()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var authBuilder = services.AddAuthentication();
+        var configuration = CreateValidConfiguration();
+
+        // Act
+        authBuilder.AddCustomerJwtBearer(configuration);
+
+        // Assert
+        var serviceProvider = services.BuildServiceProvider();
+        var schemeProvider = serviceProvider.GetRequiredService<IAuthenticationSchemeProvider>();
+        var scheme = schemeProvider.GetSchemeAsync("CustomerBearer").Result;
+        scheme.Should().NotBeNull();
+    }
+
+    [Fact]
     public void ConfigureJwtSecurityTokenHandler_ShouldDisableMapInboundClaims()
     {
         // Arrange
@@ -85,3 +103,4 @@ public class JwtAuthenticationConfigTests
     }
 
 }
+
