@@ -140,14 +140,21 @@ jobs:
           if [ -f "$COVERAGE_PATH" ]; then
             echo "✓ Coverage file exists at $COVERAGE_PATH"
             ls -lh "$COVERAGE_PATH"
+            echo "Current working directory: $(pwd)"
+            echo "Absolute path: $(pwd)/$COVERAGE_PATH"
             if grep -q "<CoverageSession>" "$COVERAGE_PATH"; then
               echo "✓ File contains valid OpenCover XML structure"
+              # Show first few lines to verify structure
+              echo "First 10 lines of coverage file:"
+              head -n 10 "$COVERAGE_PATH"
             else
               echo "✗ File does not contain valid OpenCover XML structure"
               exit 1
             fi
           else
             echo "✗ Coverage file NOT found at $COVERAGE_PATH"
+            echo "Current directory: $(pwd)"
+            echo "Searching for coverage files..."
             find . -name "coverage.opencover.xml" -type f
             exit 1
           fi
@@ -227,4 +234,18 @@ jobs:
       - name: Sonar - End
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"
+        run: |
+          echo "=== Final verification before Sonar End ==="
+          COVERAGE_PATH="TestResults/coverage/coverage.opencover.xml"
+          if [ -f "$COVERAGE_PATH" ]; then
+            echo "✓ Coverage file confirmed at: $COVERAGE_PATH"
+            echo "File size: $(stat -c%s "$COVERAGE_PATH" 2>/dev/null || echo "unknown") bytes"
+            echo "File path (absolute): ${{ github.workspace }}/$COVERAGE_PATH"
+          else
+            echo "✗ WARNING: Coverage file not found at $COVERAGE_PATH"
+            echo "Searching for coverage files..."
+            find . -name "*.opencover.xml" -type f 2>/dev/null || echo "No coverage files found"
+          fi
+          echo ""
+          echo "=== Running Sonar End ==="
+          dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"
