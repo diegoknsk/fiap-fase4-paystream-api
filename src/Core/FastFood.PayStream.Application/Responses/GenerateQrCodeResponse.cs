@@ -1,22 +1,11 @@
+using FastFood.PayStream.Application.OutputModels;
+
 namespace FastFood.PayStream.Application.Responses;
 
 /// <summary>
 /// Resposta da operação de geração de QR Code de pagamento.
+/// Herda de GenerateQrCodeOutputModel para evitar duplicação de código.
 /// </summary>
-public class GenerateQrCodeResponse
+public class GenerateQrCodeResponse : GenerateQrCodeOutputModel
 {
-    /// <summary>
-    /// URL do QR Code gerado.
-    /// </summary>
-    public string QrCodeUrl { get; set; } = string.Empty;
-
-    /// <summary>
-    /// ID do pagamento.
-    /// </summary>
-    public Guid PaymentId { get; set; }
-
-    /// <summary>
-    /// ID do pedido relacionado.
-    /// </summary>
-    public Guid OrderId { get; set; }
 }

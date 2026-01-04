@@ -71,14 +71,22 @@ public class GenerateQrCodeUseCase
         OrderSnapshotDto? orderSnapshot;
         try
         {
-            orderSnapshot = JsonSerializer.Deserialize<OrderSnapshotDto>(payment.OrderSnapshot, new JsonSerializerOptions
+            var jsonOptions = new JsonSerializerOptions
             {
-                PropertyNameCaseInsensitive = true
-            });
+                PropertyNameCaseInsensitive = true,
+                MaxDepth = 64, // Limitar profundidade para prevenir stack overflow
+                AllowTrailingCommas = false,
+                ReadCommentHandling = JsonCommentHandling.Skip
+            };
+            orderSnapshot = JsonSerializer.Deserialize<OrderSnapshotDto>(payment.OrderSnapshot, jsonOptions);
         }
         catch (JsonException ex)
         {
             throw new ApplicationException($"Erro ao deserializar OrderSnapshot: {ex.Message}");
+        }
+        catch (ArgumentOutOfRangeException ex)
+        {
+            throw new ApplicationException($"Erro ao deserializar OrderSnapshot: profundidade máxima excedida. {ex.Message}");
         }
 
         if (orderSnapshot == null)

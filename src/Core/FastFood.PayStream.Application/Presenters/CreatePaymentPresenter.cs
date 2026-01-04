@@ -10,6 +10,7 @@ public class CreatePaymentPresenter
 {
     /// <summary>
     /// Transforma o OutputModel em Response.
+    /// Como CreatePaymentResponse herda de CreatePaymentOutputModel, apenas copia as propriedades.
     /// </summary>
     /// <param name="output">OutputModel com os dados do pagamento criado.</param>
     /// <returns>Response com os dados do pagamento.</returns>

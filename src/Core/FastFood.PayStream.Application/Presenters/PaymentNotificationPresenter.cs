@@ -10,6 +10,7 @@ public class PaymentNotificationPresenter
 {
     /// <summary>
     /// Transforma o OutputModel em Response.
+    /// Como PaymentNotificationResponse herda de PaymentNotificationOutputModel, apenas copia as propriedades.
     /// </summary>
     /// <param name="output">OutputModel com os dados do pagamento atualizado.</param>
     /// <returns>Response com os dados do pagamento.</returns>
