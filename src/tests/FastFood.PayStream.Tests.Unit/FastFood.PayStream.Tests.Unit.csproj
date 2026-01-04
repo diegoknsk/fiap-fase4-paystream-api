@@ -11,6 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="coverlet.msbuild" Version="6.0.0" />
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="Moq" Version="4.20.70" />
     <PackageReference Include="xunit" Version="2.5.3" />
@@ -24,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Core\FastFood.PayStream.Application\FastFood.PayStream.Application.csproj" />
     <ProjectReference Include="..\..\Core\FastFood.PayStream.Domain\FastFood.PayStream.Domain.csproj" />
+    <ProjectReference Include="..\..\InterfacesExternas\FastFood.PayStream.Api\FastFood.PayStream.Api.csproj" />
   </ItemGroup>
 
 </Project>

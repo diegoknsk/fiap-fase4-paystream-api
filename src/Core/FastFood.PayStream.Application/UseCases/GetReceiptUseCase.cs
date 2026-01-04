@@ -70,6 +70,14 @@ public class GetReceiptUseCase
         // Chamar GetReceiptFromGatewayAsync do gateway passando Payment.ExternalTransactionId
         var receipt = await gateway.GetReceiptFromGatewayAsync(payment.ExternalTransactionId);
 
+        // Quando for fakeCheckout, ajustar o TotalPaidAmount com o valor real do pedido
+        // para tornar o recibo fake mais realista
+        var totalPaidAmount = receipt.TotalPaidAmount;
+        if (input.FakeCheckout)
+        {
+            totalPaidAmount = payment.TotalAmount;
+        }
+
         // Mapear PaymentReceipt para OutputModel
         var output = new GetReceiptOutputModel
         {
@@ -77,7 +85,7 @@ public class GetReceiptUseCase
             ExternalReference = receipt.ExternalReference,
             Status = receipt.Status,
             StatusDetail = receipt.StatusDetail,
-            TotalPaidAmount = receipt.TotalPaidAmount,
+            TotalPaidAmount = totalPaidAmount,
             PaymentMethod = receipt.PaymentMethod,
             PaymentType = receipt.PaymentType,
             Currency = receipt.Currency,
