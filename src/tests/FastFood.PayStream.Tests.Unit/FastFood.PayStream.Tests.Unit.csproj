@@ -13,8 +13,13 @@
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
     <PackageReference Include="coverlet.msbuild" Version="6.0.0" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="Moq" Version="4.20.70" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageReference Include="xunit" Version="2.5.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
   </ItemGroup>
@@ -26,6 +31,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Core\FastFood.PayStream.Application\FastFood.PayStream.Application.csproj" />
     <ProjectReference Include="..\..\Core\FastFood.PayStream.Domain\FastFood.PayStream.Domain.csproj" />
+    <ProjectReference Include="..\..\Infra\FastFood.PayStream.Infra\FastFood.PayStream.Infra.csproj" />
+    <ProjectReference Include="..\..\Infra\FastFood.PayStream.Infra.Persistence\FastFood.PayStream.Infra.Persistence.csproj" />
     <ProjectReference Include="..\..\InterfacesExternas\FastFood.PayStream.Api\FastFood.PayStream.Api.csproj" />
   </ItemGroup>
 
