@@ -14,6 +14,7 @@ public class GetReceiptUseCaseTests
     private readonly Mock<IPaymentRepository> _paymentRepositoryMock;
     private readonly Mock<IPaymentGateway> _realPaymentGatewayMock;
     private readonly Mock<IPaymentGateway> _fakePaymentGatewayMock;
+    private readonly Mock<IKitchenService> _kitchenServiceMock;
     private readonly GetReceiptPresenter _presenter;
     private readonly GetReceiptUseCase _useCase;
 
@@ -22,11 +23,16 @@ public class GetReceiptUseCaseTests
         _paymentRepositoryMock = new Mock<IPaymentRepository>();
         _realPaymentGatewayMock = new Mock<IPaymentGateway>();
         _fakePaymentGatewayMock = new Mock<IPaymentGateway>();
+        _kitchenServiceMock = new Mock<IKitchenService>();
+        _kitchenServiceMock
+            .Setup(k => k.SendToPreparationAsync(It.IsAny<Guid>(), It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
         _presenter = new GetReceiptPresenter();
         _useCase = new GetReceiptUseCase(
             _paymentRepositoryMock.Object,
             _realPaymentGatewayMock.Object,
             _fakePaymentGatewayMock.Object,
+            _kitchenServiceMock.Object,
             _presenter);
     }
 

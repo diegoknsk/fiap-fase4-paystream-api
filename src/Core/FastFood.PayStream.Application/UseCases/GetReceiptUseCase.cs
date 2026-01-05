@@ -9,12 +9,14 @@ namespace FastFood.PayStream.Application.UseCases;
 /// <summary>
 /// UseCase responsável por obter o comprovante de pagamento do gateway.
 /// Busca o Payment, valida que tem ExternalTransactionId e obtém o comprovante do gateway.
+/// Após obter o recibo, envia o pedido para a cozinha antes de finalizar.
 /// </summary>
 public class GetReceiptUseCase
 {
     private readonly IPaymentRepository _paymentRepository;
     private readonly IPaymentGateway _realPaymentGateway;
     private readonly IPaymentGateway _fakePaymentGateway;
+    private readonly IKitchenService _kitchenService;
     private readonly GetReceiptPresenter _presenter;
 
     /// <summary>
@@ -23,16 +25,19 @@ public class GetReceiptUseCase
     /// <param name="paymentRepository">Repositório para acesso aos dados de pagamento.</param>
     /// <param name="realPaymentGateway">Gateway de pagamento real (Mercado Pago).</param>
     /// <param name="fakePaymentGateway">Gateway de pagamento fake para desenvolvimento/testes.</param>
+    /// <param name="kitchenService">Serviço para integração com a API de preparação da cozinha.</param>
     /// <param name="presenter">Presenter para transformar OutputModel em Response.</param>
     public GetReceiptUseCase(
         IPaymentRepository paymentRepository,
         IPaymentGateway realPaymentGateway,
         IPaymentGateway fakePaymentGateway,
+        IKitchenService kitchenService,
         GetReceiptPresenter presenter)
     {
         _paymentRepository = paymentRepository;
         _realPaymentGateway = realPaymentGateway;
         _fakePaymentGateway = fakePaymentGateway;
+        _kitchenService = kitchenService;
         _presenter = presenter;
     }
 
@@ -91,6 +96,10 @@ public class GetReceiptUseCase
             Currency = receipt.Currency,
             DateApproved = receipt.DateApproved
         };
+
+        // Enviar pedido para a cozinha antes de finalizar o use case
+        // Se ocorrer erro, a exceção será propagada e tratada no controller
+        await _kitchenService.SendToPreparationAsync(payment.OrderId, payment.OrderSnapshot);
 
         // Retornar Response via Presenter
         return _presenter.Present(output);

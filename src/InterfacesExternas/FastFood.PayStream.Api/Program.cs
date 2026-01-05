@@ -41,6 +41,12 @@ builder.Services.AddScoped<PaymentNotificationPresenter>();
 builder.Services.AddScoped<PaymentFakeGateway>();
 builder.Services.AddScoped<PaymentMercadoPagoGateway>();
 
+// Registrar HttpClient para serviços externos
+builder.Services.AddHttpClient();
+
+// Registrar serviços externos
+builder.Services.AddScoped<IKitchenService, KitchenService>();
+
 // Registrar UseCases
 builder.Services.AddScoped<CreatePaymentUseCase>();
 builder.Services.AddScoped<GenerateQrCodeUseCase>(sp =>
@@ -56,8 +62,9 @@ builder.Services.AddScoped<GetReceiptUseCase>(sp =>
     var paymentRepository = sp.GetRequiredService<IPaymentRepository>();
     var realGateway = sp.GetRequiredService<PaymentMercadoPagoGateway>();
     var fakeGateway = sp.GetRequiredService<PaymentFakeGateway>();
+    var kitchenService = sp.GetRequiredService<IKitchenService>();
     var presenter = sp.GetRequiredService<GetReceiptPresenter>();
-    return new GetReceiptUseCase(paymentRepository, realGateway, fakeGateway, presenter);
+    return new GetReceiptUseCase(paymentRepository, realGateway, fakeGateway, kitchenService, presenter);
 });
 builder.Services.AddScoped<PaymentNotificationUseCase>(sp =>
 {
