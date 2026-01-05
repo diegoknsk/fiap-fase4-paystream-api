@@ -1,6 +1,12 @@
 name: Deploy PayStream Application
 
 on:
+  workflow_run:
+    workflows: ["PR - Build, Test, Sonar"]
+    types:
+      - completed
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       skip_migrator:
@@ -20,6 +26,7 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') || github.event_name == 'workflow_dispatch' }}
     
     outputs:
       tag: ${{ steps.set-tag.outputs.tag }}
@@ -29,6 +36,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event_name == 'workflow_run' && 'main' || github.ref }}
     
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
