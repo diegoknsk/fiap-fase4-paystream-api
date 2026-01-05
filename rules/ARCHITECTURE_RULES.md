@@ -397,6 +397,7 @@ Controllers são **adapters de transporte** (HTTP/API Gateway).
 ### Cobertura e Qualidade
 
 - **Cobertura mínima alvo: >= 80%** (cobertura de linha)
+- **Nota**: Projetos específicos podem ter metas maiores (ex: 85% para PayStream) conforme definido em seus contextos específicos
 - **Sonar Quality Gate**: deve passar sem code smells críticos e vulnerabilidades bloqueantes
 - Testes devem ser executados no CI/CD
 
@@ -540,8 +541,78 @@ CMD ["Assembly::Namespace.Class::Method"]
 ### Workflows
 
 - Todos os workflows devem estar em `.github/workflows/`
-- Usar nomes descritivos: `build-and-push.yml`, `deploy-terraform.yml`, `run-tests.yml`
+- Usar nomes descritivos: `build-and-push.yml`, `deploy-terraform.yml`, `run-tests.yml`, `deploy-to-eks.yml`
 - Sempre validar workflows com `act` ou GitHub Actions localmente antes de commitar
+
+### Deploy no EKS (Kubernetes)
+
+Para serviços HTTP hospedados no EKS, os workflows de deploy devem seguir os seguintes padrões:
+
+#### Estrutura do Workflow de Deploy
+
+```yaml
+name: Deploy [Service] Application
+
+on:
+  workflow_dispatch:
+    inputs:
+      skip_migrator:
+        description: 'Pular execução do Migrator'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: eks-[cluster-name]
+  KUBERNETES_NAMESPACE: [namespace]
+  DEPLOYMENT_NAME: [service]-api
+  CONTAINER_NAME: api
+  ECR_REPOSITORY: [ecr-repository-name]
+```
+
+#### Passos Obrigatórios
+
+1. **Checkout do código**
+2. **Configuração de credenciais AWS** (usando commit SHA nas actions)
+3. **Login no ECR**
+4. **Definição de tags de imagem** (baseadas em SHA do commit)
+5. **Configuração do kubectl** via `aws eks update-kubeconfig`
+6. **Atualização do Deployment da API**:
+   - Usar `kubectl set image deployment/[name] [container]=[image]`
+   - Aguardar rollout com timeout adequado (ex: 300s)
+7. **Execução do Job do Migrator** (quando aplicável):
+   - Deletar job existente antes de recriar
+   - Criar novo job com imagem atualizada
+   - Aguardar conclusão do job (timeout: 600s)
+8. **Verificação do deploy**:
+   - Verificar status do Deployment
+   - Verificar status dos Pods
+   - Verificar status do Job (se aplicável)
+
+#### Regras para Migrator Job
+
+- O Migrator deve ser executado como **Kubernetes Job** (não Deployment)
+- Job deve ser **idempotente** (pode ser executado múltiplas vezes)
+- Usar `restartPolicy: Never`
+- Configurar recursos adequados (requests e limits)
+- Usar `imagePullPolicy: Always` para garantir imagem atualizada
+- Configurar `terminationGracePeriodSeconds` adequado
+- Usar ConfigMap e Secrets para configurações sensíveis
+- Aguardar conclusão do job antes de considerar deploy completo
+
+#### Tags de Imagem
+
+- Usar SHA do commit (curto ou completo) para versionamento
+- Manter tag `latest` para referência
+- Formato: `[repository]:[type]-[sha]` (ex: `paystream-api:api-abc123`)
+
+#### Validações
+
+- Verificar que imagens existem no ECR antes do deploy
+- Aguardar rollout completo antes de considerar sucesso
+- Implementar timeout adequado para evitar travamentos
+- Verificar status de pods após deploy
 
 ---
 

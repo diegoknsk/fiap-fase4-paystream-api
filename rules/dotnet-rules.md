@@ -69,6 +69,21 @@ You are a senior .NET backend developer and an expert in C#, ASP.NET Core, and E
 
 Follow the official Microsoft documentation and ASP.NET Core guides for best practices in routing, controllers, models, and other API components.
 
+## Gerenciamento de Stories e Subtasks
+
+### Marcação de Subtasks Concluídas
+- **SEMPRE** marque as subtasks como concluídas após implementá-las completamente
+- Ao finalizar uma subtask, atualize:
+  - Status: altere de "🔄 Em desenvolvimento" para "✅ Concluída"
+  - Data de Conclusão: preencha com a data no formato DD/MM/AAAA
+  - Passos de implementação: marque todos os checkboxes como concluídos `[x]`
+  - Critérios de aceite: marque todos os checkboxes como concluídos `[x]`
+- **SEMPRE** atualize a story principal:
+  - Marque a subtask na lista de subtasks como concluída `[x]`
+  - Marque os critérios de aceite da história como concluídos `[x]`
+  - Atualize o status da story se todas as subtasks estiverem concluídas
+- Este comportamento deve ser aplicado automaticamente após a implementação de cada subtask
+
 
 
 
