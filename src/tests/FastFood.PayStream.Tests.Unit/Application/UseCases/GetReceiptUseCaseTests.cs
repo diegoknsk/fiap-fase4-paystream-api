@@ -1,3 +1,4 @@
+using System.Net;
 using Moq;
 using FluentAssertions;
 using FastFood.PayStream.Application.InputModels;
@@ -140,6 +141,7 @@ public class GetReceiptUseCaseTests
         result.Status.Should().Be(receipt.Status);
         result.TotalPaidAmount.Should().Be(receipt.TotalPaidAmount);
         _realPaymentGatewayMock.Verify(g => g.GetReceiptFromGatewayAsync("TRX123456"), Times.Once);
+        _kitchenServiceMock.Verify(k => k.SendToPreparationAsync(orderId, payment.OrderSnapshot), Times.Once);
     }
 
     [Fact]
@@ -232,5 +234,143 @@ public class GetReceiptUseCaseTests
         result.TotalPaidAmount.Should().Be(paymentTotalAmount);
         result.TotalPaidAmount.Should().NotBe(fakeReceiptAmount);
         _fakePaymentGatewayMock.Verify(g => g.GetReceiptFromGatewayAsync("TRX123456"), Times.Once);
+        _kitchenServiceMock.Verify(k => k.SendToPreparationAsync(orderId, payment.OrderSnapshot), Times.Once);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenValidInput_ShouldCallKitchenServiceWithCorrectParameters()
+    {
+        // Arrange
+        var orderId = Guid.NewGuid();
+        var orderSnapshot = "{\"items\":[{\"id\":1,\"name\":\"Hamburger\"}],\"order\":{},\"pricing\":{},\"version\":1}";
+        var payment = new Payment(orderId, 100.00m, orderSnapshot);
+        payment.Approve("TRX123456");
+        
+        var receipt = new PaymentReceipt
+        {
+            PaymentId = payment.Id.ToString(),
+            ExternalReference = "EXT-123",
+            Status = "approved",
+            StatusDetail = "accredited",
+            TotalPaidAmount = 100.00m,
+            PaymentMethod = "pix",
+            PaymentType = "bank_transfer",
+            Currency = "BRL",
+            DateApproved = DateTime.UtcNow
+        };
+
+        var input = new GetReceiptInputModel
+        {
+            OrderId = orderId,
+            FakeCheckout = false
+        };
+
+        _paymentRepositoryMock
+            .Setup(r => r.GetByOrderIdAsync(orderId))
+            .ReturnsAsync(payment);
+
+        _realPaymentGatewayMock
+            .Setup(g => g.GetReceiptFromGatewayAsync("TRX123456"))
+            .ReturnsAsync(receipt);
+
+        // Act
+        await _useCase.ExecuteAsync(input);
+
+        // Assert
+        _kitchenServiceMock.Verify(
+            k => k.SendToPreparationAsync(
+                It.Is<Guid>(id => id == orderId),
+                It.Is<string>(snapshot => snapshot == orderSnapshot)),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenKitchenServiceFails_ShouldPropagateException()
+    {
+        // Arrange
+        var orderId = Guid.NewGuid();
+        var payment = new Payment(orderId, 100.00m, "{}");
+        payment.Approve("TRX123456");
+        
+        var receipt = new PaymentReceipt
+        {
+            PaymentId = payment.Id.ToString(),
+            ExternalReference = "EXT-123",
+            Status = "approved",
+            StatusDetail = "accredited",
+            TotalPaidAmount = 100.00m,
+            PaymentMethod = "pix",
+            PaymentType = "bank_transfer",
+            Currency = "BRL",
+            DateApproved = DateTime.UtcNow
+        };
+
+        var input = new GetReceiptInputModel
+        {
+            OrderId = orderId,
+            FakeCheckout = false
+        };
+
+        _paymentRepositoryMock
+            .Setup(r => r.GetByOrderIdAsync(orderId))
+            .ReturnsAsync(payment);
+
+        _realPaymentGatewayMock
+            .Setup(g => g.GetReceiptFromGatewayAsync("TRX123456"))
+            .ReturnsAsync(receipt);
+
+        _kitchenServiceMock
+            .Setup(k => k.SendToPreparationAsync(It.IsAny<Guid>(), It.IsAny<string>()))
+            .ThrowsAsync(new HttpRequestException("Erro ao enviar pedido para a cozinha. Status: BadRequest"));
+
+        // Act & Assert
+        var action = async () => await _useCase.ExecuteAsync(input);
+        await action.Should().ThrowAsync<HttpRequestException>()
+            .WithMessage("*Erro ao enviar pedido para a cozinha*");
+        
+        _kitchenServiceMock.Verify(k => k.SendToPreparationAsync(orderId, payment.OrderSnapshot), Times.Once);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenFakeCheckout_ShouldCallKitchenService()
+    {
+        // Arrange
+        var orderId = Guid.NewGuid();
+        var orderSnapshot = "{\"items\":[]}";
+        var payment = new Payment(orderId, 100.00m, orderSnapshot);
+        payment.Approve("TRX123456");
+        
+        var receipt = new PaymentReceipt
+        {
+            PaymentId = payment.Id.ToString(),
+            ExternalReference = "EXT-123",
+            Status = "approved",
+            StatusDetail = "accredited",
+            TotalPaidAmount = 100.00m,
+            PaymentMethod = "pix",
+            PaymentType = "bank_transfer",
+            Currency = "BRL",
+            DateApproved = DateTime.UtcNow
+        };
+
+        var input = new GetReceiptInputModel
+        {
+            OrderId = orderId,
+            FakeCheckout = true
+        };
+
+        _paymentRepositoryMock
+            .Setup(r => r.GetByOrderIdAsync(orderId))
+            .ReturnsAsync(payment);
+
+        _fakePaymentGatewayMock
+            .Setup(g => g.GetReceiptFromGatewayAsync("TRX123456"))
+            .ReturnsAsync(receipt);
+
+        // Act
+        await _useCase.ExecuteAsync(input);
+
+        // Assert
+        _kitchenServiceMock.Verify(k => k.SendToPreparationAsync(orderId, orderSnapshot), Times.Once);
     }
 }
