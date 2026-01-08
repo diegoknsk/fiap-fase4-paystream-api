@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using FastFood.PayStream.Application.Ports;
 using FastFood.PayStream.Application.Ports.Parameters;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 namespace FastFood.PayStream.Infra.Services;
@@ -12,23 +13,44 @@ namespace FastFood.PayStream.Infra.Services;
 public class KitchenService : IKitchenService
 {
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly string _baseUrl;
-    private readonly string _token;
 
     /// <summary>
     /// Construtor que recebe as dependências necessárias.
     /// </summary>
     /// <param name="httpClientFactory">Factory para criação de HttpClient.</param>
-    /// <param name="configuration">Configuração para ler URL e token da API de preparação.</param>
-    public KitchenService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+    /// <param name="httpContextAccessor">Acesso ao contexto HTTP para obter o token do request.</param>
+    /// <param name="configuration">Configuração para ler URL da API de preparação.</param>
+    public KitchenService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
     {
         _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         
-        _baseUrl = configuration["KitchenApi:BaseUrl"] 
-            ?? throw new InvalidOperationException("Configuração 'KitchenApi:BaseUrl' não encontrada.");
-        
-        _token = configuration["KitchenApi:Token"] 
-            ?? throw new InvalidOperationException("Configuração 'KitchenApi:Token' não encontrada.");
+        _baseUrl = configuration["KitchenflowService:BaseUrl"] 
+            ?? throw new InvalidOperationException("Configuração 'KitchenflowService:BaseUrl' não encontrada.");
+    }
+
+    /// <summary>
+    /// Extrai o token Bearer do header Authorization do request.
+    /// </summary>
+    /// <returns>Token Bearer ou null se não encontrado.</returns>
+    public string? GetBearerToken()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext == null)
+            return null;
+
+        // Extrair token do header Authorization
+        var authHeader = httpContext.Request.Headers["Authorization"].FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(authHeader))
+            return null;
+
+        // Remover prefixo "Bearer " se presente
+        if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            return authHeader.Substring(7);
+
+        return authHeader;
     }
 
     /// <inheritdoc />
@@ -69,7 +91,13 @@ public class KitchenService : IKitchenService
         };
 
         // Adicionar headers
-        httpRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _token);
+        var token = GetBearerToken();
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            throw new InvalidOperationException("Token de autenticação não encontrado no header Authorization do request.");
+        }
+        
+        httpRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         httpRequest.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
         // Enviar requisição

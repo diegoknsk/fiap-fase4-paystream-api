@@ -44,6 +44,9 @@ builder.Services.AddScoped<PaymentMercadoPagoGateway>();
 // Registrar HttpClient para serviços externos
 builder.Services.AddHttpClient();
 
+// Registrar HttpContextAccessor para acesso ao contexto HTTP
+builder.Services.AddHttpContextAccessor();
+
 // Registrar serviços externos
 builder.Services.AddScoped<IKitchenService, KitchenService>();
 

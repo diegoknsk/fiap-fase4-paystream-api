@@ -6,6 +6,7 @@ using FluentAssertions;
 using Moq;
 using FastFood.PayStream.Infra.Services;
 using FastFood.PayStream.Application.Ports.Parameters;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Http;
 
@@ -14,26 +15,39 @@ namespace FastFood.PayStream.Tests.Unit.Infra.Services;
 public class KitchenServiceTests
 {
     private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
+    private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
     private readonly Mock<IConfiguration> _configurationMock;
     private readonly Mock<IConfigurationSection> _kitchenApiSectionMock;
     private readonly KitchenService _kitchenService;
     private readonly HttpClient _httpClient;
     private readonly HttpMessageHandler _messageHandler;
+    private readonly Mock<HttpContext> _httpContextMock;
+    private readonly Mock<IHeaderDictionary> _headersMock;
 
     public KitchenServiceTests()
     {
         _httpClientFactoryMock = new Mock<IHttpClientFactory>();
+        _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
         _configurationMock = new Mock<IConfiguration>();
         _kitchenApiSectionMock = new Mock<IConfigurationSection>();
+        _httpContextMock = new Mock<HttpContext>();
+        _headersMock = new Mock<IHeaderDictionary>();
 
         // Configurar mocks de configuração
         _configurationMock
-            .Setup(c => c["KitchenApi:BaseUrl"])
+            .Setup(c => c["KitchenflowService:BaseUrl"])
             .Returns("http://localhost:5010");
+
+        // Configurar mock do HttpContext
+        var requestMock = new Mock<HttpRequest>();
+        requestMock.Setup(r => r.Headers).Returns(_headersMock.Object);
+        _httpContextMock.Setup(c => c.Request).Returns(requestMock.Object);
+        _httpContextAccessorMock.Setup(a => a.HttpContext).Returns(_httpContextMock.Object);
         
-        _configurationMock
-            .Setup(c => c["KitchenApi:Token"])
-            .Returns("test-token-123");
+        // Configurar header Authorization padrão
+        _headersMock
+            .Setup(h => h["Authorization"])
+            .Returns(new Microsoft.Extensions.Primitives.StringValues("Bearer test-token-123"));
 
         // Criar HttpClient com handler mockado
         _messageHandler = new MockHttpMessageHandler();
@@ -46,7 +60,7 @@ public class KitchenServiceTests
             .Setup(f => f.CreateClient(It.IsAny<string>()))
             .Returns(_httpClient);
 
-        _kitchenService = new KitchenService(_httpClientFactoryMock.Object, _configurationMock.Object);
+        _kitchenService = new KitchenService(_httpClientFactoryMock.Object, _httpContextAccessorMock.Object, _configurationMock.Object);
     }
 
     [Fact]
@@ -211,9 +225,18 @@ public class KitchenServiceTests
     public void Constructor_WhenHttpClientFactoryIsNull_ShouldThrowArgumentNullException()
     {
         // Act & Assert
-        var action = () => new KitchenService(null!, _configurationMock.Object);
+        var action = () => new KitchenService(null!, _httpContextAccessorMock.Object, _configurationMock.Object);
         action.Should().Throw<ArgumentNullException>()
             .WithParameterName("httpClientFactory");
+    }
+
+    [Fact]
+    public void Constructor_WhenHttpContextAccessorIsNull_ShouldThrowArgumentNullException()
+    {
+        // Act & Assert
+        var action = () => new KitchenService(_httpClientFactoryMock.Object, null!, _configurationMock.Object);
+        action.Should().Throw<ArgumentNullException>()
+            .WithParameterName("httpContextAccessor");
     }
 
     [Fact]
@@ -221,27 +244,35 @@ public class KitchenServiceTests
     {
         // Arrange
         _configurationMock
-            .Setup(c => c["KitchenApi:BaseUrl"])
+            .Setup(c => c["KitchenflowService:BaseUrl"])
             .Returns((string?)null);
 
         // Act & Assert
-        var action = () => new KitchenService(_httpClientFactoryMock.Object, _configurationMock.Object);
+        var action = () => new KitchenService(_httpClientFactoryMock.Object, _httpContextAccessorMock.Object, _configurationMock.Object);
         action.Should().Throw<InvalidOperationException>()
-            .WithMessage("*KitchenApi:BaseUrl*");
+            .WithMessage("*KitchenflowService:BaseUrl*");
     }
 
     [Fact]
-    public void Constructor_WhenTokenIsMissing_ShouldThrowInvalidOperationException()
+    public async Task SendToPreparationAsync_WhenTokenIsMissing_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        _configurationMock
-            .Setup(c => c["KitchenApi:Token"])
-            .Returns((string?)null);
+        var emptyHeadersMock = new Mock<IHeaderDictionary>();
+        emptyHeadersMock
+            .Setup(h => h["Authorization"])
+            .Returns(Microsoft.Extensions.Primitives.StringValues.Empty);
+        
+        var requestMock = new Mock<HttpRequest>();
+        requestMock.Setup(r => r.Headers).Returns(emptyHeadersMock.Object);
+        _httpContextMock.Setup(c => c.Request).Returns(requestMock.Object);
+        
+        var orderId = Guid.NewGuid();
+        var orderSnapshot = "{\"items\":[]}";
 
         // Act & Assert
-        var action = () => new KitchenService(_httpClientFactoryMock.Object, _configurationMock.Object);
-        action.Should().Throw<InvalidOperationException>()
-            .WithMessage("*KitchenApi:Token*");
+        var action = async () => await _kitchenService.SendToPreparationAsync(orderId, orderSnapshot);
+        await action.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*Token de autenticação não encontrado*");
     }
 }
 
