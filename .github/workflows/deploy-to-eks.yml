@@ -99,6 +99,15 @@ jobs:
         aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.EKS_CLUSTER_NAME }}
         kubectl version --client
     
+    - name: Create or update Kubernetes Secret
+      run: |
+        echo "Creating or updating Kubernetes Secret with connection string..."
+        kubectl create secret generic paystream-secrets \
+          --from-literal=ConnectionStrings__DefaultConnection="${{ secrets.POSTGRES_CONNECTION_STRING }}" \
+          --namespace=${{ env.KUBERNETES_NAMESPACE }} \
+          --dry-run=client -o yaml | kubectl apply -f -
+        echo "Kubernetes Secret updated successfully"
+    
     - name: Update API deployment
       run: |
         echo "Updating ${DEPLOYMENT_NAME} deployment with new image..."
