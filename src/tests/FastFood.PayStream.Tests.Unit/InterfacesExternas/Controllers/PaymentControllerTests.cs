@@ -19,6 +19,7 @@ public class PaymentControllerTests
     private readonly Mock<IPaymentRepository> _paymentRepositoryMock;
     private readonly Mock<IPaymentGateway> _realGatewayMock;
     private readonly Mock<IPaymentGateway> _fakeGatewayMock;
+    private readonly Mock<IKitchenService> _kitchenServiceMock;
     private readonly CreatePaymentUseCase _createPaymentUseCase;
     private readonly GenerateQrCodeUseCase _generateQrCodeUseCase;
     private readonly GetReceiptUseCase _getReceiptUseCase;
@@ -29,6 +30,10 @@ public class PaymentControllerTests
         _paymentRepositoryMock = new Mock<IPaymentRepository>();
         _realGatewayMock = new Mock<IPaymentGateway>();
         _fakeGatewayMock = new Mock<IPaymentGateway>();
+        _kitchenServiceMock = new Mock<IKitchenService>();
+        _kitchenServiceMock
+            .Setup(k => k.SendToPreparationAsync(It.IsAny<Guid>(), It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
         
         _createPaymentUseCase = new CreatePaymentUseCase(
             _paymentRepositoryMock.Object,
@@ -42,6 +47,7 @@ public class PaymentControllerTests
             _paymentRepositoryMock.Object,
             _realGatewayMock.Object,
             _fakeGatewayMock.Object,
+            _kitchenServiceMock.Object,
             new GetReceiptPresenter());
         
         _controller = new PaymentController(
