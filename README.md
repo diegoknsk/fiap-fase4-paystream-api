@@ -257,6 +257,18 @@ O projeto utiliza **SonarCloud** para análise contínua de qualidade de código
 - **Métricas de Cobertura**: Monitoramento contínuo da cobertura de testes
 - **Relatórios Detalhados**: Análise de duplicação, complexidade e manutenibilidade
 
+**Status de Qualidade:**
+
+![Evidência de Qualidade SonarCloud](docs/evidencia%20qualidade.png)
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=diegoknsk_fiap-fase4-paystream-api&metric=alert_status)](https://sonarcloud.io/project/overview?id=diegoknsk_fiap-fase4-paystream-api)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=diegoknsk_fiap-fase4-paystream-api&metric=coverage)](https://sonarcloud.io/project/overview?id=diegoknsk_fiap-fase4-paystream-api)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=diegoknsk_fiap-fase4-paystream-api&metric=security_rating)](https://sonarcloud.io/project/overview?id=diegoknsk_fiap-fase4-paystream-api)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=diegoknsk_fiap-fase4-paystream-api&metric=reliability_rating)](https://sonarcloud.io/project/overview?id=diegoknsk_fiap-fase4-paystream-api)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=diegoknsk_fiap-fase4-paystream-api&metric=sqale_rating)](https://sonarcloud.io/project/overview?id=diegoknsk_fiap-fase4-paystream-api)
+
+**Dashboard Completo**: [Visualizar no SonarCloud](https://sonarcloud.io/project/overview?id=diegoknsk_fiap-fase4-paystream-api)
+
 ### Pipeline CI Valida
 
 O pipeline de CI/CD valida automaticamente:
